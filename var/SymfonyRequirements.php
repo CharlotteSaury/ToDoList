@@ -388,7 +388,7 @@ class SymfonyRequirements extends RequirementCollection
     public function __construct()
     {
         /* mandatory requirements follow */
-        
+
         $installedPhpVersion = PHP_VERSION;
         $requiredPhpVersion = $this->getPhpRequiredVersion();
 
