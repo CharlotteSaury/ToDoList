@@ -38,9 +38,6 @@
             "./src/Repository/.gitignore"
         ]
     },
-    "doctrine/doctrine-cache-bundle": {
-        "version": "1.4.0"
-    },
     "doctrine/event-manager": {
         "version": "1.1.1"
     },
@@ -87,6 +84,9 @@
         "version": "1.0.1"
     },
     "psr/container": {
+        "version": "1.0.0"
+    },
+    "psr/event-dispatcher": {
         "version": "1.0.0"
     },
     "psr/log": {
@@ -143,9 +143,6 @@
             "./bin/console",
             "./config/bootstrap.php"
         ]
-    },
-    "symfony/debug": {
-        "version": "v4.0.15"
     },
     "symfony/dependency-injection": {
         "version": "v4.0.15"
@@ -212,9 +209,6 @@
             "./src/Controller/.gitignore",
             "./src/Kernel.php"
         ]
-    },
-    "symfony/http-client-contracts": {
-        "version": "v2.2.0"
     },
     "symfony/http-foundation": {
         "version": "v4.0.15"
@@ -376,12 +370,12 @@
         "version": "v4.0.15"
     },
     "symfony/twig-bundle": {
-        "version": "4.4",
+        "version": "5.0",
         "recipe": {
             "repo": "github.com/symfony/recipes",
             "branch": "master",
-            "version": "4.4",
-            "ref": "15a41bbd66a1323d09824a189b485c126bbefa51"
+            "version": "5.0",
+            "ref": "fab9149bbaa4d5eca054ed93f9e1b66cc500895d"
         },
         "files": [
             "./config/packages/test/twig.yaml",
