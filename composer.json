@@ -17,6 +17,7 @@
         "php": "^7.3",
         "doctrine/common": "2.*",
         "doctrine/doctrine-bundle": "2.1.*",
+        "doctrine/doctrine-fixtures-bundle": "^3.3",
         "doctrine/orm": "2.7.*",
         "incenteev/composer-parameter-handler": "^2.0",
         "liip/test-fixtures-bundle": "^1.9",
