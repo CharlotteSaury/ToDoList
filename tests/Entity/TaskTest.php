@@ -37,4 +37,11 @@ class TaskTest extends KernelTestCase
         $invalidTask->setContent('');
         $this->assertHasErrors($invalidTask, 2);
     }
+
+    public function testToggle()
+    {
+        $task = new Task();
+        $task->toggle(!$task->isDone());
+        $this->assertSame(true, $task->isDone());
+    }
 }
