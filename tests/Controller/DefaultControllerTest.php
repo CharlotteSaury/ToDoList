@@ -2,32 +2,143 @@
 
 namespace App\Tests\Controller;
 
+use App\Tests\Utils\NeedLogin;
+use Symfony\Component\HttpFoundation\Response;
+use Liip\TestFixturesBundle\Test\FixturesTrait;
 use Symfony\Bundle\FrameworkBundle\Test\WebTestCase;
 
 class DefaultControllerTest extends WebTestCase
 {
-    public function testIndex()
+    use NeedLogin;
+    use FixturesTrait;
+
+    private $client = null;
+
+    public function setUp()
     {
-        $client = static::createClient();
-
-        $crawler = $client->request('GET', '/');
-
-        $this->assertEquals(200, $client->getResponse()->getStatusCode());
-        $this->assertContains('Welcome to Symfony', $crawler->filter('#container h1')->text());
+        $this->client = static::createClient();
     }
 
-    
+    /**
+     * Load fixtures files.
+     *
+     * @return array
+     */
+    public function loadCustomFixtures()
+    {
+        return $this->loadFixtureFiles([
+            \dirname(__DIR__) . '/Fixtures/tasks.yaml',
+            \dirname(__DIR__) . '/Fixtures/users.yaml'
+        ]);
+    }
+
+    /**
+     * Test redirection to login when not authenticated user ask for homepage
+     *
+     */
+    public function testHomepageNotAuthenticated()
+    {
+        $this->client->request('GET', '/');
+        $this->assertResponseRedirects('http://localhost/login');
+    }
+
     /**
      * Test access to homepage for authenticated user
      *
      * @return void
      */
-    /*public function testHomepageAuthenticated()
+    public function testHomepageAuthenticated()
     {
         $fixtures = $this->loadCustomFixtures();
         $this->login($this->client, $fixtures['user1']);
-        $this->client->request('GET', '/');
+        
+        $crawler = $this->client->request('GET', '/');
         $this->assertResponseStatusCodeSame(Response::HTTP_OK);
-        $this->assertSelectorExists('button', 'Se déconnecter');
-    }*/
+        $this->assertSame(1, $crawler->filter('html:contains("Bienvenue sur Todo List, l\'application vous permettant de gérer l\'ensemble de vos tâches sans effort !")')->count());
+        $this->assertSelectorExists('a', 'Se déconnecter');
+        $this->assertSelectorExists('a', 'Créer une nouvelle tâche');
+        $this->assertSelectorExists('a', 'Consulter la liste des tâches à faire');
+        $this->assertSelectorExists('a', 'Consulter la liste des tâches terminées');
+        $this->assertSelectorExists('a', 'Créer un utilisateur');
+        
+    }
+
+    public function createCrawlerHomepage()
+    {
+        $fixtures = $this->loadCustomFixtures();
+        $this->login($this->client, $fixtures['user1']);
+        $crawler = $this->client->request('GET', '/');
+        return $crawler;
+    }
+
+
+    /**
+     * Test validity of task creation link
+     *
+     * @return void
+     */
+    public function testValidTaskCreationLink()
+    {
+        $crawler = $this->createCrawlerHomepage();
+        $link = $crawler->selectLink('Créer une nouvelle tâche')->link();
+        $crawler = $this->client->click($link);
+        $this->assertSelectorExists('form');
+        $this->assertSelectorTextSame('button', 'Ajouter');
+    }
+
+    /**
+     * Test validity of to do task list link
+     *
+     * @return void
+     */
+    public function testValidToDoTaskListLink()
+    {
+        $crawler = $this->createCrawlerHomepage();
+        $link = $crawler->selectLink('Consulter la liste des tâches à faire')->link();
+        $crawler = $this->client->click($link);
+        $this->assertSelectorExists('.thumbnail');
+        $this->assertSelectorExists('.glyphicon-remove');
+        $this->assertSelectorNotExists('.glyphicon-ok');
+    }
+
+    /**
+     * Test validity of done task list link
+     *
+     * @return void
+     */
+    public function testValidIsDoneTaskListLink()
+    {
+        $crawler = $this->createCrawlerHomepage();
+        $link = $crawler->selectLink('Consulter la liste des tâches terminées')->link();
+        $crawler = $this->client->click($link);
+        $this->assertSelectorExists('.thumbnail');
+        $this->assertSelectorExists('.glyphicon-ok');
+        $this->assertSelectorNotExists('.glyphicon-remove');
+    }
+
+    /**
+     * Test validity of create user link
+     *
+     * @return void
+     */
+    public function testValidCreateUserLink()
+    {
+        $crawler = $this->createCrawlerHomepage();
+        $link = $crawler->selectLink('Créer un utilisateur')->link();
+        $crawler = $this->client->click($link);
+        $this->assertSelectorTextSame('h1', 'Créer un utilisateur');
+    }
+
+    /**
+     * Test validity of logout link
+     *
+     * @return void
+     */
+    public function testValidLogoutLink()
+    {
+        $crawler = $this->createCrawlerHomepage();
+        $link = $crawler->selectLink('Se déconnecter')->link();
+        $crawler = $this->client->click($link);
+        $this->assertResponseRedirects('http://localhost/');
+    }
 }

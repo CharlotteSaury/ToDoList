@@ -87,12 +87,12 @@ class TaskControllerTest extends WebTestCase
         $this->assertSelectorExists('a', 'Se déconnecter');
         $this->assertSelectorExists('a', 'Créer une tâche');
         $this->assertSelectorExists('.caption');
-        $this->assertSelectorExists('.glyphicon-ok');
         $this->assertSelectorExists('.thumbnail h4 a');
-        $this->assertSelectorExists('.thumbnail button', 'Marquer comme non terminée');
         $this->assertSelectorExists('.thumbnail button', 'Supprimer');
-        $this->assertSelectorNotExists('.glyphicon-remove');
-        $this->assertSelectorNotExists('.thumbnail button', 'Marquer comme faite');
+        $this->assertSelectorExists('.glyphicon-remove');
+        $this->assertSelectorExists('.thumbnail button', 'Marquer comme faite');
+        $this->assertSelectorNotExists('.glyphicon-ok');
+        $this->assertSelectorNotExists('.thumbnail button', 'Marquer comme non terminée');
     }
 
     /**
@@ -135,7 +135,7 @@ class TaskControllerTest extends WebTestCase
         $this->assertCount(1, $crawler->filter('textarea'));
         $this->assertSame(1, $crawler->filter('html:contains("Title")')->count());
         $this->assertSame(1, $crawler->filter('html:contains("Content")')->count());
-        $this->assertSelectorExists('button', 'Ajouter');
+        $this->assertSelectorTextSame('button', 'Ajouter');
     }
 
     /**
