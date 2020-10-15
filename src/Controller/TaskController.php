@@ -5,6 +5,7 @@ namespace App\Controller;
 use App\Entity\Task;
 use App\Form\TaskType;
 use App\Repository\TaskRepository;
+use Exception;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\Routing\Annotation\Route;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
@@ -84,6 +85,9 @@ class TaskController extends AbstractController
      */
     public function deleteTaskAction(Task $task)
     {
+        if (!$task) {
+            throw new Exception('errorrr');
+        }
         $em = $this->getDoctrine()->getManager();
         $em->remove($task);
         $em->flush();
