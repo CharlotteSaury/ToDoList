@@ -37,7 +37,7 @@ class TaskControllerTest extends WebTestCase
      *
      * @dataProvider provideAuthenticatedUserAccessibleUrls
      */
-    public function testUnaccessiblePagesNotAuthenticated($method, $url)
+    public function testUnaccessibleTaskPagesNotAuthenticated($method, $url)
     {
         $this->client->request($method, $url);
         $this->assertResponseRedirects('http://localhost/login');
@@ -55,7 +55,7 @@ class TaskControllerTest extends WebTestCase
     }
 
     /**
-     * Test access to task creation page for authenticated user
+     * Test access to restricted pages related to tasks for authenticated user
      *
      * @return void
      */
@@ -79,7 +79,7 @@ class TaskControllerTest extends WebTestCase
      *
      * @return void
      */
-    public function testIntegrationListActionAuthenticated()
+    public function testIntegrationTaskListActionAuthenticated()
     {
         $fixtures = $this->loadCustomFixtures();
         $this->login($this->client, $fixtures['user1']);
