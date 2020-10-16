@@ -27,7 +27,8 @@ class DefaultControllerTest extends WebTestCase
     public function loadCustomFixtures()
     {
         return $this->loadFixtureFiles([
-            \dirname(__DIR__) . '/Fixtures/users.yaml'
+            \dirname(__DIR__) . '/Fixtures/users.yaml',
+            \dirname(__DIR__) . '/Fixtures/tasks.yaml'
         ]);
     }
 
@@ -95,8 +96,9 @@ class DefaultControllerTest extends WebTestCase
         $crawler = $this->createCrawlerHomepage();
         $link = $crawler->selectLink('Consulter la liste des tâches à faire')->link();
         $crawler = $this->client->click($link);
-        $this->assertSelectorExists('.thumbnail');
-        $this->assertSelectorExists('.glyphicon-remove');
+        //$this->assertSelectorExists('.thumbnail');
+        $this->assertSame(2, $crawler->filter('.thumbnail')->count());
+        $this->assertSame(2, $crawler->filter('.glyphicon-remove')->count());
         $this->assertSelectorNotExists('.glyphicon-ok');
     }
 
@@ -110,8 +112,8 @@ class DefaultControllerTest extends WebTestCase
         $crawler = $this->createCrawlerHomepage();
         $link = $crawler->selectLink('Consulter la liste des tâches terminées')->link();
         $crawler = $this->client->click($link);
-        $this->assertSelectorExists('.thumbnail');
-        $this->assertSelectorExists('.glyphicon-ok');
+        $this->assertSame(1, $crawler->filter('.thumbnail')->count());
+        $this->assertSame(1, $crawler->filter('.glyphicon-ok')->count());
         $this->assertSelectorNotExists('.glyphicon-remove');
     }
 

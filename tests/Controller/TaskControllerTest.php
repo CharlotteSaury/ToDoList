@@ -75,24 +75,25 @@ class TaskControllerTest extends WebTestCase
     }
 
     /**
-     * Test integration of done task list page for authenticated user
+     * Test integration of to do task list page for authenticated user
      *
      * @return void
      */
-    public function testIntegrationTaskListActionAuthenticated()
+    public function testIntegrationToDoTaskListActionAuthenticated()
     {
         $fixtures = $this->loadCustomFixtures();
         $this->login($this->client, $fixtures['user1']);
-        $this->client->request('GET', '/tasks');
-        $this->assertSelectorExists('a', 'Se déconnecter');
-        $this->assertSelectorExists('a', 'Créer une tâche');
+        $crawler = $this->client->request('GET', '/tasks');
+        $this->assertSame(1, $crawler->filter('a:contains("Se déconnecter")')->count());
+        $this->assertSame(1, $crawler->filter('a:contains("Créer une tâche")')->count());
+
         $this->assertSelectorExists('.caption');
         $this->assertSelectorExists('.thumbnail h4 a');
-        $this->assertSelectorExists('.thumbnail button', 'Supprimer');
+        $this->assertSame(2, $crawler->filter('.thumbnail button:contains("Supprimer")')->count());
         $this->assertSelectorExists('.glyphicon-remove');
-        $this->assertSelectorExists('.thumbnail button', 'Marquer comme faite');
+        $this->assertSame(2, $crawler->filter('.thumbnail button:contains("Marquer comme faite")')->count());
         $this->assertSelectorNotExists('.glyphicon-ok');
-        $this->assertSelectorNotExists('.thumbnail button', 'Marquer comme non terminée');
+        $this->assertSame(0, $crawler->filter('.thumbnail button:contains("Marquer comme non terminée")')->count());
     }
 
     /**
@@ -128,14 +129,14 @@ class TaskControllerTest extends WebTestCase
         $this->login($this->client, $fixtures['user1']);
         $crawler = $this->client->request('GET', '/tasks/create');
 
-        $this->assertSelectorExists('a', 'Se déconnecter');
-        $this->assertSelectorExists('a', 'Retour à la liste des tâches');
+        $this->assertSame(1, $crawler->filter('a:contains("Se déconnecter")')->count());
+        $this->assertSame(1, $crawler->filter('a:contains("Retour à la liste des tâches")')->count());
         $this->assertSelectorExists('form');
         $this->assertCount(2, $crawler->filter('input'));
         $this->assertCount(1, $crawler->filter('textarea'));
         $this->assertSame(1, $crawler->filter('html:contains("Title")')->count());
         $this->assertSame(1, $crawler->filter('html:contains("Content")')->count());
-        $this->assertSelectorTextSame('button', 'Ajouter');
+        $this->assertSame(1, $crawler->filter('button:contains("Ajouter")')->count());
     }
 
     /**
@@ -157,12 +158,27 @@ class TaskControllerTest extends WebTestCase
         $this->assertResponseRedirects('/tasks');
         $crawler = $this->client->followRedirect();
         $this->assertSame(1, $crawler->filter('div.alert.alert-success')->count());
-        $this->assertSelectorExists('h4 a', 'New Task');
-        $this->assertSelectorExists('p', 'New content');
+        $this->assertSame(1, $crawler->filter('h4 a:contains("New Task")')->count());
+        $this->assertSame(1, $crawler->filter('p:contains("New content")')->count());
     }
 
     /**
-     * Test integration of task creation page for authenticated user
+     * Test validity of edit task link
+     *
+     * @return void
+     */
+    public function testValidEditTaskLinkTasksPage()
+    {
+        $fixtures = $this->loadCustomFixtures();
+        $this->login($this->client, $fixtures['user1']);
+        $crawler = $this->client->request('GET', '/tasks');
+        $link = $crawler->selectLink('title1')->link();
+        $crawler = $this->client->click($link);
+        $this->assertSame(1, $crawler->filter('input[value="title1"]')->count());
+    }
+
+    /**
+     * Test integration of task edition page for authenticated user
      *
      * @return void
      */
@@ -172,13 +188,13 @@ class TaskControllerTest extends WebTestCase
         $this->login($this->client, $fixtures['user1']);
         $crawler = $this->client->request('GET', '/tasks/1/edit');
 
-        $this->assertSelectorExists('a', 'Se déconnecter');
+        $this->assertSame(1, $crawler->filter('a:contains("Se déconnecter")')->count());
         //$this->assertSelectorExists('a', 'Retour à la liste des tâches');
         $this->assertSelectorExists('form');
-        $this->assertCount(2, $crawler->filter('input'));
-        $this->assertCount(1, $crawler->filter('textarea'));
-        $this->assertSame(1, $crawler->filter('html:contains("Title")')->count());
-        $this->assertSame(1, $crawler->filter('html:contains("Content")')->count());
+        $this->assertSame(1, $crawler->filter('label:contains("Title")')->count());
+        $this->assertSame(1, $crawler->filter('label:contains("Content")')->count());
+        $this->assertSame(1, $crawler->filter('input[value="title1"]')->count());
+        $this->assertSame(1, $crawler->filter('textarea:contains("content1")')->count());
         $this->assertSelectorExists('button', 'Modifier');
         $this->assertInputValueNotSame('task[title]', '');
     }
@@ -202,8 +218,8 @@ class TaskControllerTest extends WebTestCase
         $this->assertResponseRedirects('/tasks');
         $crawler = $this->client->followRedirect();
         $this->assertSame(1, $crawler->filter('div.alert.alert-success')->count());
-        $this->assertSelectorExists('h4 a', 'updated title');
-        $this->assertSelectorExists('p', 'updated content');
+        $this->assertSame(1, $crawler->filter('h4 a:contains("updated title")')->count());
+        $this->assertSame(1, $crawler->filter('p:contains("updated content")')->count());
     }
 
     /**
