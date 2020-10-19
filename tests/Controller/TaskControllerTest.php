@@ -96,6 +96,7 @@ class TaskControllerTest extends WebTestCase
         $this->assertSame(2, $crawler->filter('.thumbnail button:contains("Marquer comme faite")')->count());
         $this->assertSelectorNotExists('.glyphicon-ok');
         $this->assertSame(0, $crawler->filter('.thumbnail button:contains("Marquer comme terminée")')->count());
+        $this->assertSame(2, $crawler->filter('.thumbnail h6:contains("Auteur: Anonyme")')->count());
     }
 
     /**
@@ -103,7 +104,7 @@ class TaskControllerTest extends WebTestCase
      *
      * @return void
      */
-    public function testIntegrationDoneListActionAuthenticated()
+    public function testIntegrationDoneTaskListActionAuthenticated()
     {
         $fixtures = $this->loadCustomFixtures();
         $this->login($this->client, $fixtures['user1']);
@@ -119,6 +120,7 @@ class TaskControllerTest extends WebTestCase
         $this->assertSame(1, $crawler->filter('.thumbnail button:contains("Marquer non terminée")')->count());   
         $this->assertSelectorNotExists('.glyphicon-remove');   
         $this->assertSame(0, $crawler->filter('.thumbnail button:contains("Marquer comme faite")')->count());
+        $this->assertSame(1, $crawler->filter('.thumbnail h6:contains("Auteur: Anonyme")')->count());
     }
 
     /**

@@ -105,7 +105,7 @@ class Task
         $this->isDone = $flag;
     }
 
-    public function getAuthor(): ?User
+    public function getAuthor()
     {
         return $this->author !== NULL ? $this->author: "Anonyme";
     }
