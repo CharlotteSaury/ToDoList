@@ -13,7 +13,7 @@ use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 class TaskController extends AbstractController
 {
     /**
-     * @Route("/tasks/todo", name="task_todo_list")
+     * @Route("/tasks", name="task_todo_list")
      */
     public function listAction(TaskRepository $taskRepository)
     {
