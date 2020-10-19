@@ -153,6 +153,6 @@ class DefaultControllerTest extends WebTestCase
         $crawler = $this->createCrawlerHomepage();
         $link = $crawler->selectLink('To Do List app')->link();
         $crawler = $this->client->click($link);
-        $this->assertResponseRedirects('http://localhost/');
+        $this->assertResponseRedirects('/');
     }
 }
