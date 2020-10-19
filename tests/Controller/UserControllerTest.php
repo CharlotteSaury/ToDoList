@@ -203,7 +203,6 @@ class UserControllerTest extends WebTestCase
         $fixtures = $this->loadCustomFixtures();
         $this->login($this->client, $fixtures['user1']);
         $crawler = $this->client->request('GET', '/users/1/edit');
-        //dd($crawler);
         $this->assertSelectorExists('form');
         $this->assertCount(5, $crawler->filter('label'));
         $this->assertCount(5, $crawler->filter('input'));
