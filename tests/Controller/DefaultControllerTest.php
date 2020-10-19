@@ -142,17 +142,4 @@ class DefaultControllerTest extends WebTestCase
         $crawler = $this->client->click($link);
         $this->assertResponseRedirects('http://localhost/');
     }
-
-    /**
-     * Test validity of homepage header link
-     *
-     * @return void
-     */
-    public function testValidHomepageLink()
-    {
-        $crawler = $this->createCrawlerHomepage();
-        $link = $crawler->selectLink('To Do List app')->link();
-        $crawler = $this->client->click($link);
-        $this->assertResponseRedirects('/');
-    }
 }

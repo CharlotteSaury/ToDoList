@@ -295,4 +295,17 @@ class TaskControllerTest extends WebTestCase
             $this->assertResponseStatusCodeSame(Response::HTTP_NOT_FOUND);
         }
     }
+
+    /**
+     * Test validity of homepage header link
+     *
+     * @return void
+     */
+    public function testValidHomepageLink()
+    {
+        $crawler = $this->client->request('GET', '/login');
+        $link = $crawler->selectLink('To Do List app')->link();
+        $crawler = $this->client->click($link);
+        $this->assertResponseRedirects('http://localhost/login');
+    }
 }
