@@ -165,6 +165,7 @@ class TaskControllerTest extends WebTestCase
         $this->assertSame(1, $crawler->filter('div.alert.alert-success')->count());
         $this->assertSame(1, $crawler->filter('h4 a:contains("New Task")')->count());
         $this->assertSame(1, $crawler->filter('p:contains("New content")')->count());
+        $this->assertSame(1, $crawler->filter('h6:contains("Auteur: username1")')->count());
     }
 
     /**
