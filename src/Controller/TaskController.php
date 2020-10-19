@@ -85,9 +85,6 @@ class TaskController extends AbstractController
      */
     public function deleteTaskAction(Task $task)
     {
-        if (!$task) {
-            throw new Exception('errorrr');
-        }
         $em = $this->getDoctrine()->getManager();
         $em->remove($task);
         $em->flush();
