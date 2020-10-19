@@ -107,7 +107,7 @@ class Task
 
     public function getAuthor(): ?User
     {
-        return $this->author;
+        return $this->author !== NULL ? $this->author: "Anonyme";
     }
 
     public function setAuthor(?User $author): self
