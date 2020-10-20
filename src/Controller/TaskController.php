@@ -28,7 +28,10 @@ class TaskController extends AbstractController
      */
     public function listAction()
     {
-        return $this->render('task/list.html.twig', ['tasks' => $this->taskManager->handleListAction()]);
+        return $this->render('task/list.html.twig', [
+            'tasks' => $this->taskManager->handleListAction()
+            ]
+        );
     }
 
     /**
@@ -36,7 +39,11 @@ class TaskController extends AbstractController
      */
     public function doneListAction()
     {
-        return $this->render('task/list.html.twig', ['tasks' => $this->taskManager->handleListAction(true)]);
+        return $this->render('task/list.html.twig', [
+            'tasks' => $this->taskManager->handleListAction(true),
+            'type' => 'done'
+            ]
+        );
     }
 
     /**
