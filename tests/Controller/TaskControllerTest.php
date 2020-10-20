@@ -287,10 +287,9 @@ class TaskControllerTest extends WebTestCase
     {
         $fixtures = $this->loadCustomFixtures();
         $this->login($this->client, $fixtures['user1']);
-        $crawler = $this->client->request('GET', '/tasks/5/delete');
-        $this->assertResponseRedirects('/tasks/todo');
-        $crawler = $this->client->followRedirect();
-        $this->assertSame(1, $crawler->filter('div.alert.alert-danger')->count());
+        $this->client->request('GET', '/tasks/5/delete');
+        $this->assertResponseStatusCodeSame(Response::HTTP_UNAUTHORIZED);
+        $this->client->request('GET', '/tasks/todo');
         $this->assertSelectorExists('#task5');
     }
 
@@ -319,10 +318,9 @@ class TaskControllerTest extends WebTestCase
     {
         $fixtures = $this->loadCustomFixtures();
         $this->login($this->client, $fixtures['user1']);
-        $crawler = $this->client->request('GET', '/tasks/1/delete');
-        $this->assertResponseRedirects('/tasks/todo');
-        $crawler = $this->client->followRedirect();
-        $this->assertSame(1, $crawler->filter('div.alert.alert-danger')->count());
+        $this->client->request('GET', '/tasks/1/delete');
+        $this->assertResponseStatusCodeSame(Response::HTTP_UNAUTHORIZED);
+        $this->client->request('GET', '/tasks/todo');
         $this->assertSelectorExists('#task1');
     }
 

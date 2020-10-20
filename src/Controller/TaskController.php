@@ -2,12 +2,13 @@
 
 namespace App\Controller;
 
+use Exception;
 use App\Entity\Task;
 use App\Form\TaskType;
 use App\Repository\TaskRepository;
-use Exception;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\Routing\Annotation\Route;
+use Sensio\Bundle\FrameworkExtraBundle\Configuration\IsGranted;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 
 class TaskController extends AbstractController
@@ -93,6 +94,7 @@ class TaskController extends AbstractController
 
     /**
      * @Route("/tasks/{id}/delete", name="task_delete")
+     * @IsGranted("TASK_DELETE", subject="task", statusCode=401, message="Seule la personne ayant créé la tâche est authorisé à la supprimer." )
      */
     public function deleteTaskAction(Task $task)
     {
