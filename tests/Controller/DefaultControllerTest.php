@@ -97,8 +97,8 @@ class DefaultControllerTest extends WebTestCase
         $link = $crawler->selectLink('Consulter la liste des tâches à faire')->link();
         $crawler = $this->client->click($link);
         //$this->assertSelectorExists('.thumbnail');
-        $this->assertSame(2, $crawler->filter('.thumbnail')->count());
-        $this->assertSame(2, $crawler->filter('.glyphicon-remove')->count());
+        $this->assertSame(4, $crawler->filter('.thumbnail')->count());
+        $this->assertSame(4, $crawler->filter('.glyphicon-remove')->count());
         $this->assertSelectorNotExists('.glyphicon-ok');
     }
 
