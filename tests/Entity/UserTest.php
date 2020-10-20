@@ -2,6 +2,7 @@
 
 namespace App\Tests\Entity;
 
+use App\Entity\Task;
 use App\Entity\User;
 use App\Tests\Utils\AssertHasErrors;
 use Liip\TestFixturesBundle\Test\FixturesTrait;
@@ -64,4 +65,23 @@ class UserTest extends KernelTestCase
         $invalidUser->setEmail('user1@email.com');
         $this->assertHasErrors($invalidUser, 1);
     }
+
+    public function testAddAndRemoveTask()
+    {
+        $user = new User();
+        for ($i = 1; $i <= 10; ++$i) {
+            $task = new Task();
+            $task->setTitle('task'.$i)
+                ->setContent('content'.$i)
+                ->setAuthor($user);
+            $user->addTask($task);
+        }
+        $tasks = $user->getTasks();
+        $this->assertSame(10, count($tasks)); 
+
+        $user->removeTask($tasks[0]);
+        $user->removeTask($tasks[1]);
+        $this->assertSame(8, count($tasks));
+    }
+
 }

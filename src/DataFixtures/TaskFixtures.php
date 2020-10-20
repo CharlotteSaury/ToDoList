@@ -11,6 +11,7 @@ class TaskFixtures extends Fixture
     /**
      * Load task fixtures.
      *
+     * @param ObjectManager $manager
      * @return void
      */
     public function load(ObjectManager $manager)
