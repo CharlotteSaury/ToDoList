@@ -92,7 +92,7 @@ class TaskController extends AbstractController
 
     /**
      * @Route("/tasks/{id}/delete", name="task_delete")
-     * @IsGranted("TASK_DELETE", subject="task", statusCode=401, message="Seule la personne ayant créé la tâche est authorisé à la supprimer." )
+     * @IsGranted("TASK_DELETE", subject="task", statusCode=401)
      */
     public function deleteTaskAction(Task $task)
     {
