@@ -263,19 +263,35 @@ class TaskControllerTest extends WebTestCase
     }
 
     /**
-     * Test delete action
+     * Test allowed delete action by author
      *
      * @return void
      */
-    public function testDeleteAction()
+    public function testDeleteActionByAuthor()
     {
         $fixtures = $this->loadCustomFixtures();
         $this->login($this->client, $fixtures['user1']);
-        $crawler = $this->client->request('GET', '/tasks/1/delete');
+        $crawler = $this->client->request('GET', '/tasks/4/delete');
         $this->assertResponseRedirects('/tasks/todo');
         $crawler = $this->client->followRedirect();
         $this->assertSame(1, $crawler->filter('div.alert.alert-success')->count());
-        $this->assertSelectorNotExists('#task1');
+        $this->assertSelectorNotExists('#task4');
+    }
+
+    /**
+     * Test forbidden delete action by other user than author
+     *
+     * @return void
+     */
+    public function testDeleteActionByNotAuthor()
+    {
+        $fixtures = $this->loadCustomFixtures();
+        $this->login($this->client, $fixtures['user1']);
+        $crawler = $this->client->request('GET', '/tasks/5/delete');
+        $this->assertResponseRedirects('/tasks/todo');
+        $crawler = $this->client->followRedirect();
+        $this->assertSame(1, $crawler->filter('div.alert.alert-danger')->count());
+        $this->assertSelectorExists('#task5');
     }
 
     /**
