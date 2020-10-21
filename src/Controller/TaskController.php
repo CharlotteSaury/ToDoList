@@ -101,10 +101,15 @@ class TaskController extends AbstractController
      * @Route("/tasks/{id}/delete", name="task_delete")
      * @IsGranted("TASK_DELETE", subject="task", statusCode=401)
      */
-    public function deleteTaskAction(Task $task)
+    public function deleteTaskAction(Task $task, Request $request)
     {
-        $this->taskManager->handleDeleteAction($task);
-        $this->addFlash('success', 'La tâche a bien été supprimée.');
-        return $this->redirectToRoute('task_todo_list');
+        if ($this->isCsrfTokenValid('task_deletion_'.$task->getId(), $request->get('_token'))) {
+            $this->taskManager->handleDeleteAction($task);
+            $this->addFlash('success', 'La tâche a bien été supprimée.');
+           
+        } else {
+            $this->addFlash('error', 'Une erreur est survenue. La tâche n\'a pu être supprimée.');
+        }
+         return $this->redirectToRoute('task_todo_list');
     }
 }
