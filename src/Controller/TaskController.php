@@ -103,10 +103,9 @@ class TaskController extends AbstractController
      */
     public function deleteTaskAction(Task $task, Request $request)
     {
-        if ($this->isCsrfTokenValid('task_deletion_'.$task->getId(), $request->get('_token'))) {
+        if ($this->isCsrfTokenValid('task_deletion_'.$task->getId(), $request->request->get('_csrf_token'))) {
             $this->taskManager->handleDeleteAction($task);
             $this->addFlash('success', 'La tâche a bien été supprimée.');
-           
         } else {
             $this->addFlash('error', 'Une erreur est survenue. La tâche n\'a pu être supprimée.');
         }

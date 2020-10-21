@@ -43,7 +43,7 @@ class SecurityControllerTest extends WebTestCase
         $this->assertSelectorExists('form');
         $this->assertSame(1, $crawler->filter('html:contains("Nom d\'utilisateur :")')->count());
         $this->assertSame(1, $crawler->filter('html:contains("Mot de passe :")')->count());
-        $this->assertCount(2, $crawler->filter('input'));
+        $this->assertCount(3, $crawler->filter('input'));
         $this->assertSelectorTextSame('button', 'Se connecter');
     }
 

@@ -51,7 +51,7 @@ class TaskControllerTest extends WebTestCase
             ['GET', '/tasks/create'],
             ['GET', '/tasks/1/edit'],
             ['GET', '/tasks/1/toggle'],
-            ['GET', '/tasks/1/delete']
+            ['DELETE', '/tasks/1/delete']
         ];
     }
 
@@ -271,7 +271,7 @@ class TaskControllerTest extends WebTestCase
     {
         $fixtures = $this->loadCustomFixtures();
         $this->login($this->client, $fixtures['user1']);
-        $crawler = $this->client->request('GET', '/tasks/4/delete');
+        $crawler = $this->client->request('POST', '/tasks/4/delete');
         $this->assertResponseRedirects('/tasks/todo');
         $crawler = $this->client->followRedirect();
         $this->assertSame(1, $crawler->filter('div.alert.alert-success')->count());
@@ -287,7 +287,7 @@ class TaskControllerTest extends WebTestCase
     {
         $fixtures = $this->loadCustomFixtures();
         $this->login($this->client, $fixtures['user1']);
-        $this->client->request('GET', '/tasks/5/delete');
+        $this->client->request('DELETE', '/tasks/5/delete');
         $this->assertResponseStatusCodeSame(Response::HTTP_UNAUTHORIZED);
         $this->client->request('GET', '/tasks/todo');
         $this->assertSelectorExists('#task5');
@@ -302,7 +302,7 @@ class TaskControllerTest extends WebTestCase
     {
         $fixtures = $this->loadCustomFixtures();
         $this->login($this->client, $fixtures['admin1']);
-        $crawler = $this->client->request('GET', '/tasks/1/delete');
+        $crawler = $this->client->request('DELETE', '/tasks/1/delete');
         $this->assertResponseRedirects('/tasks/todo');
         $crawler = $this->client->followRedirect();
         $this->assertSame(1, $crawler->filter('div.alert.alert-success')->count());
@@ -318,7 +318,7 @@ class TaskControllerTest extends WebTestCase
     {
         $fixtures = $this->loadCustomFixtures();
         $this->login($this->client, $fixtures['user1']);
-        $this->client->request('GET', '/tasks/1/delete');
+        $this->client->request('DELETE', '/tasks/1/delete');
         $this->assertResponseStatusCodeSame(Response::HTTP_UNAUTHORIZED);
         $this->client->request('GET', '/tasks/todo');
         $this->assertSelectorExists('#task1');
@@ -334,7 +334,7 @@ class TaskControllerTest extends WebTestCase
         $routes = [
             ['GET', '/tasks/10/edit'],
             ['GET', '/tasks/10/toggle'],
-            ['GET', '/tasks/10/delete']
+            ['DELETE', '/tasks/10/delete']
         ];
         $fixtures = $this->loadCustomFixtures();
         $this->login($this->client, $fixtures['user1']);
