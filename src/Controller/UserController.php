@@ -51,11 +51,14 @@ class UserController extends AbstractController
      */
     public function editAction(User $user, Request $request)
     {
-        $form = $this->createForm(UserType::class, $user);
+        $form = $this->createForm(UserType::class, $user, [
+            'require_password' => false
+        ]);
+        $password = $user->getPassword();
         $form->handleRequest($request);
 
         if ($form->isSubmitted() && $form->isValid()) {
-            $this->userManager->handleCreateOrUpdate($user, false);
+            $this->userManager->handleCreateOrUpdate($user, false, $password);
             $this->addFlash('success', "L'utilisateur a bien été modifié");
             return $this->redirectToRoute('user_list');
         }

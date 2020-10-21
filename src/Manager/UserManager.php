@@ -36,9 +36,11 @@ class UserManager
         return $this->userRepository->findAll();
     }
 
-    public function handleCreateOrUpdate(User $user, bool $persist = true)
+    public function handleCreateOrUpdate(User $user, bool $persist = true, string $password = null)
     {
-        $password = $this->encoder->encodePassword($user, $user->getPassword());
+        if ($password == null) {
+            $password = $this->encoder->encodePassword($user, $user->getPassword());
+        }  
         $user->setPassword($password);
         if ($persist) {
             $this->entityManager->persist($user);
