@@ -32,6 +32,8 @@ class User implements UserInterface
 
     /**
      * @ORM\Column(type="string", length=255)
+     * @Assert\NotBlank(groups={"registration"})
+     * @Assert\Length(min="6", max="30", groups={"registration"})
      */
     private $password;
 

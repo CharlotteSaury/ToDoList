@@ -38,7 +38,7 @@ class UserManager
 
     public function handleCreateOrUpdate(User $user, bool $persist = true, string $password = null)
     {
-        if ($password == null) {
+        if ($user->getPassword() != null) {
             $password = $this->encoder->encodePassword($user, $user->getPassword());
         }  
         $user->setPassword($password);
