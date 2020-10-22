@@ -27,8 +27,8 @@ class TaskControllerTest extends WebTestCase
     public function loadCustomFixtures()
     {
         return $this->loadFixtureFiles([
-            \dirname(__DIR__).'/Fixtures/tasks.yaml',
-            \dirname(__DIR__).'/Fixtures/users.yaml',
+            'tests/Fixtures/users.yaml',
+            'tests/Fixtures/tasks.yaml',
         ]);
     }
 

@@ -59,7 +59,7 @@ class UserTest extends KernelTestCase
     public function testInvalidUniqueEmail()
     {
         $this->loadFixtureFiles([
-            \dirname(__DIR__).'/Fixtures/Users.yaml',
+            'tests/Fixtures/Users.yaml',
         ]);
         $invalidUser = $this->getEntity();
         $invalidUser->setEmail('user1@email.com');
