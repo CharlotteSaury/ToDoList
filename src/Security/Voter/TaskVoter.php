@@ -4,10 +4,10 @@ namespace App\Security\Voter;
 
 use App\Entity\Task;
 use App\Entity\User;
+use Symfony\Component\Security\Core\Authentication\Token\TokenInterface;
+use Symfony\Component\Security\Core\Authorization\Voter\Voter;
 use Symfony\Component\Security\Core\Security;
 use Symfony\Component\Security\Core\User\UserInterface;
-use Symfony\Component\Security\Core\Authorization\Voter\Voter;
-use Symfony\Component\Security\Core\Authentication\Token\TokenInterface;
 
 class TaskVoter extends Voter
 {
@@ -21,12 +21,11 @@ class TaskVoter extends Voter
         $this->security = $security;
     }
 
-    
     protected function supports($attribute, $subject)
     {
         // replace with your own logic
         // https://symfony.com/doc/current/security/voters.html
-        return in_array($attribute, ['TASK_DELETE'])
+        return \in_array($attribute, ['TASK_DELETE'], true)
             && $subject instanceof \App\Entity\Task;
     }
 
@@ -38,7 +37,7 @@ class TaskVoter extends Voter
             return false;
         }
 
-        /**@var Task $task */
+        /** @var Task $task */
         $task = $subject;
 
         // ... (check conditions and return true to grant permission) ...
@@ -54,13 +53,15 @@ class TaskVoter extends Voter
     /**
      * @param Task $task
      * @param User $user
-     * @return boolean
+     *
+     * @return bool
      */
     private function canDelete(Task $task, User $user)
     {
-        if ($this->security->isGranted('ROLE_ADMIN') && ($task->getAuthor() == NULL)) {
+        if ($this->security->isGranted('ROLE_ADMIN') && (null === $task->getAuthor())) {
             return true;
         }
+
         return $user === $task->getAuthor();
     }
 }

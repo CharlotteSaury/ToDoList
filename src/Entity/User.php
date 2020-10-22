@@ -5,9 +5,9 @@ namespace App\Entity;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
+use Symfony\Bridge\Doctrine\Validator\Constraints\UniqueEntity;
 use Symfony\Component\Security\Core\User\UserInterface;
 use Symfony\Component\Validator\Constraints as Assert;
-use Symfony\Bridge\Doctrine\Validator\Constraints\UniqueEntity;
 
 /**
  * @ORM\Table("user")
@@ -73,6 +73,7 @@ class User implements UserInterface
     public function setUsername($username): self
     {
         $this->username = $username;
+
         return $this;
     }
 
@@ -89,6 +90,7 @@ class User implements UserInterface
     public function setPassword($password): self
     {
         $this->password = $password;
+
         return $this;
     }
 
@@ -100,6 +102,7 @@ class User implements UserInterface
     public function setEmail($email): self
     {
         $this->email = $email;
+
         return $this;
     }
 
@@ -152,5 +155,4 @@ class User implements UserInterface
 
         return $this;
     }
-
 }

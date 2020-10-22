@@ -2,14 +2,14 @@
 
 namespace App\Controller;
 
-use Exception;
 use App\Entity\Task;
 use App\Form\TaskType;
 use App\Manager\TaskManager;
-use Symfony\Component\HttpFoundation\Request;
-use Symfony\Component\Routing\Annotation\Route;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\IsGranted;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
+use Symfony\Component\HttpFoundation\Request;
+use Symfony\Component\HttpFoundation\Response;
+use Symfony\Component\Routing\Annotation\Route;
 
 class TaskController extends AbstractController
 {
@@ -24,30 +24,42 @@ class TaskController extends AbstractController
     }
 
     /**
+     * Manage to do task list display.
+     *
      * @Route("/tasks/todo", name="task_todo_list")
+     *
+     * @return Response
      */
     public function listAction()
     {
         return $this->render('task/list.html.twig', [
-            'tasks' => $this->taskManager->handleListAction()
+            'tasks' => $this->taskManager->handleListAction(),
             ]
         );
     }
 
     /**
+     * Manage done task list display.
+     *
      * @Route("/tasks/done", name="task_done_list")
+     *
+     * @return Response
      */
     public function doneListAction()
     {
         return $this->render('task/list.html.twig', [
             'tasks' => $this->taskManager->handleListAction(true),
-            'type' => 'done'
+            'type' => 'done',
             ]
         );
     }
 
     /**
+     * Manage new task creation.
+     *
      * @Route("/tasks/create", name="task_create")
+     *
+     * @return Response
      */
     public function createAction(Request $request)
     {
@@ -58,6 +70,7 @@ class TaskController extends AbstractController
         if ($form->isSubmitted() && $form->isValid()) {
             $this->taskManager->handleCreateOrUpdate($task);
             $this->addFlash('success', 'La tâche a été bien été ajoutée.');
+
             return $this->redirectToRoute('task_todo_list');
         }
 
@@ -65,7 +78,11 @@ class TaskController extends AbstractController
     }
 
     /**
+     * Manage existing task edition.
+     *
      * @Route("/tasks/{id}/edit", name="task_edit")
+     *
+     * @return Response
      */
     public function editAction(Task $task, Request $request)
     {
@@ -76,6 +93,7 @@ class TaskController extends AbstractController
         if ($form->isSubmitted() && $form->isValid()) {
             $this->taskManager->handleCreateOrUpdate();
             $this->addFlash('success', 'La tâche a bien été modifiée.');
+
             return $this->redirectToRoute('task_todo_list');
         }
 
@@ -86,30 +104,39 @@ class TaskController extends AbstractController
     }
 
     /**
+     * Manage task status modification (done/todo).
+     *
      * @Route("/tasks/{id}/toggle", name="task_toggle")
+     *
+     * @return Response
      */
     public function toggleTaskAction(Task $task)
     {
         $task = $this->taskManager->handleToggleAction($task);
-        $status = ($task->isDone() == true) ? 'faite': 'non terminée';
-        $this->addFlash('success', sprintf('La tâche %s a bien été marquée comme ' . $status, $task->getTitle()));
+        $status = (true === $task->isDone()) ? 'faite' : 'non terminée';
+        $this->addFlash('success', sprintf('La tâche %s a bien été marquée comme '.$status, $task->getTitle()));
 
         return $this->redirectToRoute('task_todo_list');
     }
 
     /**
+     * Manage task deletion restricted to task author or admin for anonymous tasks.
+     *
      * @Route("/tasks/{id}/delete", name="task_delete")
      * @IsGranted("TASK_DELETE", subject="task", statusCode=401)
+     *
+     * @return Response
      */
     public function deleteTaskAction(Task $task, Request $request)
     {
-        if ($this->isCsrfTokenValid('task_deletion_'.$task->getId(), $request->get('_token'))) {
+        if ($this->isCsrfTokenValid('task_deletion_'.$task->getId(), $request->request->get('_csrf_token'))) {
             $this->taskManager->handleDeleteAction($task);
             $this->addFlash('success', 'La tâche a bien été supprimée.');
-           
-        } else {
-            $this->addFlash('error', 'Une erreur est survenue. La tâche n\'a pu être supprimée.');
+
+            return $this->redirectToRoute('task_todo_list');
         }
-         return $this->redirectToRoute('task_todo_list');
+        $this->addFlash('error', 'Une erreur est survenue. La tâche n\'a pu être supprimée.');
+
+        return $this->redirectToRoute('task_todo_list');
     }
 }

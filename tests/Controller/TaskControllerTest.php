@@ -3,9 +3,9 @@
 namespace App\Tests\Controller;
 
 use App\Tests\Utils\NeedLogin;
-use Symfony\Component\HttpFoundation\Response;
 use Liip\TestFixturesBundle\Test\FixturesTrait;
 use Symfony\Bundle\FrameworkBundle\Test\WebTestCase;
+use Symfony\Component\HttpFoundation\Response;
 
 class TaskControllerTest extends WebTestCase
 {
@@ -27,8 +27,8 @@ class TaskControllerTest extends WebTestCase
     public function loadCustomFixtures()
     {
         return $this->loadFixtureFiles([
-            \dirname(__DIR__) . '/Fixtures/tasks.yaml',
-            \dirname(__DIR__) . '/Fixtures/users.yaml'
+            \dirname(__DIR__).'/Fixtures/tasks.yaml',
+            \dirname(__DIR__).'/Fixtures/users.yaml',
         ]);
     }
 
@@ -51,12 +51,12 @@ class TaskControllerTest extends WebTestCase
             ['GET', '/tasks/create'],
             ['GET', '/tasks/1/edit'],
             ['GET', '/tasks/1/toggle'],
-            ['GET', '/tasks/1/delete']
+            ['DELETE', '/tasks/1/delete'],
         ];
     }
 
     /**
-     * Test access to restricted pages related to tasks for authenticated user
+     * Test access to restricted pages related to tasks for authenticated user.
      *
      * @return void
      */
@@ -66,7 +66,7 @@ class TaskControllerTest extends WebTestCase
             ['GET', '/tasks/todo'],
             ['GET', '/tasks/done'],
             ['GET', '/tasks/create'],
-            ['GET', '/tasks/1/edit']
+            ['GET', '/tasks/1/edit'],
         ];
         $fixtures = $this->loadCustomFixtures();
         $this->login($this->client, $fixtures['user1']);
@@ -77,7 +77,7 @@ class TaskControllerTest extends WebTestCase
     }
 
     /**
-     * Test integration of to do task list page for authenticated user
+     * Test integration of to do task list page for authenticated user.
      *
      * @return void
      */
@@ -100,7 +100,7 @@ class TaskControllerTest extends WebTestCase
     }
 
     /**
-     * Test integration of done task list page for authenticated user
+     * Test integration of done task list page for authenticated user.
      *
      * @return void
      */
@@ -117,14 +117,14 @@ class TaskControllerTest extends WebTestCase
         $this->assertSelectorExists('.thumbnail h4 a');
         $this->assertSame(1, $crawler->filter('.thumbnail button:contains("Supprimer")')->count());
         $this->assertSelectorExists('.glyphicon-ok');
-        $this->assertSame(1, $crawler->filter('.thumbnail button:contains("Marquer non terminée")')->count());   
-        $this->assertSelectorNotExists('.glyphicon-remove');   
+        $this->assertSame(1, $crawler->filter('.thumbnail button:contains("Marquer non terminée")')->count());
+        $this->assertSelectorNotExists('.glyphicon-remove');
         $this->assertSame(0, $crawler->filter('.thumbnail button:contains("Marquer comme faite")')->count());
         $this->assertSame(1, $crawler->filter('.thumbnail h6:contains("Auteur: Anonyme")')->count());
     }
 
     /**
-     * Test integration of task creation page for authenticated user
+     * Test integration of task creation page for authenticated user.
      *
      * @return void
      */
@@ -145,7 +145,7 @@ class TaskControllerTest extends WebTestCase
     }
 
     /**
-     * Test new task creation
+     * Test new task creation.
      *
      * @return void
      */
@@ -169,7 +169,7 @@ class TaskControllerTest extends WebTestCase
     }
 
     /**
-     * Test validity of edit task link
+     * Test validity of edit task link.
      *
      * @return void
      */
@@ -184,7 +184,7 @@ class TaskControllerTest extends WebTestCase
     }
 
     /**
-     * Test integration of task edition page for authenticated user
+     * Test integration of task edition page for authenticated user.
      *
      * @return void
      */
@@ -206,7 +206,7 @@ class TaskControllerTest extends WebTestCase
     }
 
     /**
-     * Test new task edition
+     * Test new task edition.
      *
      * @return void
      */
@@ -229,7 +229,7 @@ class TaskControllerTest extends WebTestCase
     }
 
     /**
-     * Test toggle action - set task1 is_done to true
+     * Test toggle action - set task1 is_done to true.
      *
      * @return void
      */
@@ -245,7 +245,7 @@ class TaskControllerTest extends WebTestCase
     }
 
     /**
-     * Test toggle action - set task3 is_done to false
+     * Test toggle action - set task3 is_done to false.
      *
      * @return void
      */
@@ -263,7 +263,7 @@ class TaskControllerTest extends WebTestCase
     }
 
     /**
-     * Test allowed delete action by author
+     * Test allowed delete action by author.
      *
      * @return void
      */
@@ -271,7 +271,7 @@ class TaskControllerTest extends WebTestCase
     {
         $fixtures = $this->loadCustomFixtures();
         $this->login($this->client, $fixtures['user1']);
-        $crawler = $this->client->request('GET', '/tasks/4/delete');
+        $crawler = $this->client->request('POST', '/tasks/4/delete');
         $this->assertResponseRedirects('/tasks/todo');
         $crawler = $this->client->followRedirect();
         $this->assertSame(1, $crawler->filter('div.alert.alert-success')->count());
@@ -279,7 +279,7 @@ class TaskControllerTest extends WebTestCase
     }
 
     /**
-     * Test forbidden delete action by other user than author
+     * Test forbidden delete action by other user than author.
      *
      * @return void
      */
@@ -287,14 +287,14 @@ class TaskControllerTest extends WebTestCase
     {
         $fixtures = $this->loadCustomFixtures();
         $this->login($this->client, $fixtures['user1']);
-        $this->client->request('GET', '/tasks/5/delete');
+        $this->client->request('DELETE', '/tasks/5/delete');
         $this->assertResponseStatusCodeSame(Response::HTTP_UNAUTHORIZED);
         $this->client->request('GET', '/tasks/todo');
         $this->assertSelectorExists('#task5');
     }
 
     /**
-     * Test allowed anonymous task delete action by admin
+     * Test allowed anonymous task delete action by admin.
      *
      * @return void
      */
@@ -302,7 +302,7 @@ class TaskControllerTest extends WebTestCase
     {
         $fixtures = $this->loadCustomFixtures();
         $this->login($this->client, $fixtures['admin1']);
-        $crawler = $this->client->request('GET', '/tasks/1/delete');
+        $crawler = $this->client->request('DELETE', '/tasks/1/delete');
         $this->assertResponseRedirects('/tasks/todo');
         $crawler = $this->client->followRedirect();
         $this->assertSame(1, $crawler->filter('div.alert.alert-success')->count());
@@ -310,7 +310,7 @@ class TaskControllerTest extends WebTestCase
     }
 
     /**
-     * Test forbidden anonymous task delete action by not granted role_admin
+     * Test forbidden anonymous task delete action by not granted role_admin.
      *
      * @return void
      */
@@ -318,14 +318,14 @@ class TaskControllerTest extends WebTestCase
     {
         $fixtures = $this->loadCustomFixtures();
         $this->login($this->client, $fixtures['user1']);
-        $this->client->request('GET', '/tasks/1/delete');
+        $this->client->request('DELETE', '/tasks/1/delete');
         $this->assertResponseStatusCodeSame(Response::HTTP_UNAUTHORIZED);
         $this->client->request('GET', '/tasks/todo');
         $this->assertSelectorExists('#task1');
     }
 
     /**
-     * Test 404 error response when action with unexisting resource
+     * Test 404 error response when action with unexisting resource.
      *
      * @return void
      */
@@ -334,7 +334,7 @@ class TaskControllerTest extends WebTestCase
         $routes = [
             ['GET', '/tasks/10/edit'],
             ['GET', '/tasks/10/toggle'],
-            ['GET', '/tasks/10/delete']
+            ['DELETE', '/tasks/10/delete'],
         ];
         $fixtures = $this->loadCustomFixtures();
         $this->login($this->client, $fixtures['user1']);
@@ -346,7 +346,7 @@ class TaskControllerTest extends WebTestCase
     }
 
     /**
-     * Test validity of homepage header link
+     * Test validity of homepage header link.
      *
      * @return void
      */

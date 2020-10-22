@@ -20,9 +20,10 @@ class UserFixtures extends Fixture
     }
 
     /**
-     * Load user fixtures to database
+     * Load user fixtures to database.
      *
      * @param ObjectManager $manager
+     *
      * @return void
      */
     public function load(ObjectManager $manager)

@@ -15,7 +15,7 @@ class UserTest extends KernelTestCase
 
     /**
      * Create a valid entity for tests.
-     * 
+     *
      * @return User
      */
     public function getEntity(): User
@@ -59,7 +59,7 @@ class UserTest extends KernelTestCase
     public function testInvalidUniqueEmail()
     {
         $this->loadFixtureFiles([
-            dirname(__DIR__).'/Fixtures/Users.yaml',
+            \dirname(__DIR__).'/Fixtures/Users.yaml',
         ]);
         $invalidUser = $this->getEntity();
         $invalidUser->setEmail('user1@email.com');
@@ -77,10 +77,10 @@ class UserTest extends KernelTestCase
             $user->addTask($task);
         }
         $tasks = $user->getTasks();
-        $this->assertSame(10, count($tasks)); 
+        $this->assertSame(10, \count($tasks));
 
         $user->removeTask($tasks[0]);
         $user->removeTask($tasks[1]);
-        $this->assertSame(8, count($tasks));
+        $this->assertSame(8, \count($tasks));
     }
 }

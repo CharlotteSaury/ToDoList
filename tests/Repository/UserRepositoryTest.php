@@ -11,12 +11,12 @@ use Symfony\Bundle\FrameworkBundle\Test\KernelTestCase;
 class UserRepositoryTest extends KernelTestCase
 {
     use FixturesTrait;
-    
+
     public function testUserFixturesNumber()
     {
         self::bootKernel();
         $this->loadFixtures([TaskFixtures::class, UserFixtures::class]);
         $users = self::$container->get(UserRepository::class)->count([]);
-        $this->assertEquals(11, $users);
+        $this->assertSame(11, $users);
     }
 }
