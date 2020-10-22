@@ -31,11 +31,23 @@ class TaskManager
         $this->security = $security;
     }
 
+    /**
+     * Handle task list recovery from database
+     *
+     * @param boolean $isDone
+     * @return Array 
+     */
     public function handleListAction(bool $isDone = false)
     {
         return $this->taskRepository->findBy(['isDone' => $isDone]);
     }
 
+    /**
+     * Handle task status modification
+     *
+     * @param Task $task
+     * @return Task $task
+     */
     public function handleToggleAction(Task $task)
     {
         $task->toggle(!$task->isDone());
@@ -43,6 +55,12 @@ class TaskManager
         return $task;
     }
 
+    /**
+     * Handle task creation or edition in database
+     *
+     * @param Task $task
+     * @return void
+     */
     public function handleCreateOrUpdate(Task $task = null)
     {
         if ($task != null) {
@@ -52,6 +70,12 @@ class TaskManager
         $this->entityManager->flush();
     }
 
+    /**
+     * Handle task deletion in database
+     *
+     * @param Task $task
+     * @return void
+     */
     public function handleDeleteAction(Task $task)
     {
         $this->entityManager->remove($task);

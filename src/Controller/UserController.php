@@ -6,6 +6,7 @@ use App\Entity\User;
 use App\Form\UserType;
 use App\Manager\UserManager;
 use Symfony\Component\HttpFoundation\Request;
+use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 
@@ -20,8 +21,12 @@ class UserController extends AbstractController
     {
         $this->userManager = $userManager;
     }
+
     /**
+     * Manage users list display restricted to admin
+     * 
      * @Route("/users", name="user_list")
+     * @return Response
      */
     public function listAction()
     {
@@ -29,7 +34,10 @@ class UserController extends AbstractController
     }
 
     /**
+     * Manage new user creation 
+     * 
      * @Route("/users/create", name="user_create")
+     * @return Response
      */
     public function createAction(Request $request)
     {
@@ -49,7 +57,10 @@ class UserController extends AbstractController
     }
 
     /**
+     * Manage existing user edition
+     * 
      * @Route("/users/{id}/edit", name="user_edit")
+     * @return Response
      */
     public function editAction(User $user, Request $request)
     {

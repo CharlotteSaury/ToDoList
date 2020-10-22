@@ -2,11 +2,11 @@
 
 namespace App\Controller;
 
-use Exception;
 use App\Entity\Task;
 use App\Form\TaskType;
 use App\Manager\TaskManager;
 use Symfony\Component\HttpFoundation\Request;
+use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\IsGranted;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
@@ -24,7 +24,10 @@ class TaskController extends AbstractController
     }
 
     /**
+     * Manage to do task list display
+     * 
      * @Route("/tasks/todo", name="task_todo_list")
+     * @return Response
      */
     public function listAction()
     {
@@ -35,7 +38,10 @@ class TaskController extends AbstractController
     }
 
     /**
+     * Manage done task list display
+     * 
      * @Route("/tasks/done", name="task_done_list")
+     * @return Response
      */
     public function doneListAction()
     {
@@ -47,7 +53,10 @@ class TaskController extends AbstractController
     }
 
     /**
+     * Manage new task creation
+     * 
      * @Route("/tasks/create", name="task_create")
+     * @return Response
      */
     public function createAction(Request $request)
     {
@@ -65,7 +74,10 @@ class TaskController extends AbstractController
     }
 
     /**
+     * Manage existing task edition
+     * 
      * @Route("/tasks/{id}/edit", name="task_edit")
+     * @return Response
      */
     public function editAction(Task $task, Request $request)
     {
@@ -86,7 +98,10 @@ class TaskController extends AbstractController
     }
 
     /**
+     * Manage task status modification (done/todo)
+     * 
      * @Route("/tasks/{id}/toggle", name="task_toggle")
+     * @return Response
      */
     public function toggleTaskAction(Task $task)
     {
@@ -98,17 +113,20 @@ class TaskController extends AbstractController
     }
 
     /**
+     * Manage task deletion restricted to task author or admin for anonymous tasks
+     * 
      * @Route("/tasks/{id}/delete", name="task_delete")
      * @IsGranted("TASK_DELETE", subject="task", statusCode=401)
+     * @return Response
      */
     public function deleteTaskAction(Task $task, Request $request)
     {
         if ($this->isCsrfTokenValid('task_deletion_'.$task->getId(), $request->request->get('_csrf_token'))) {
             $this->taskManager->handleDeleteAction($task);
             $this->addFlash('success', 'La tâche a bien été supprimée.');
-        } else {
-            $this->addFlash('error', 'Une erreur est survenue. La tâche n\'a pu être supprimée.');
-        }
-         return $this->redirectToRoute('task_todo_list');
+            return $this->redirectToRoute('task_todo_list');
+        } 
+        $this->addFlash('error', 'Une erreur est survenue. La tâche n\'a pu être supprimée.');
+        return $this->redirectToRoute('task_todo_list');
     }
 }

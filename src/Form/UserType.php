@@ -14,6 +14,9 @@ use Symfony\Component\Form\Extension\Core\Type\RepeatedType;
 
 class UserType extends AbstractType
 {
+    /**
+     * Create form related to User class
+     */
     public function buildForm(FormBuilderInterface $builder, array $options)
     {
         $builder
