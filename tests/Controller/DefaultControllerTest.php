@@ -3,6 +3,8 @@
 namespace App\Tests\Controller;
 
 use App\Tests\Utils\NeedLogin;
+use App\DataFixtures\TaskTestFixtures;
+use App\DataFixtures\UserTestFixtures;
 use Symfony\Component\HttpFoundation\Response;
 use Liip\TestFixturesBundle\Test\FixturesTrait;
 use Symfony\Bundle\FrameworkBundle\Test\WebTestCase;
@@ -17,19 +19,7 @@ class DefaultControllerTest extends WebTestCase
     public function setUp()
     {
         $this->client = static::createClient();
-    }
-
-    /**
-     * Load fixtures files.
-     *
-     * @return array
-     */
-    public function loadCustomFixtures()
-    {
-        return $this->loadFixtureFiles([
-            dirname(__DIR__).'/Fixtures/users.yaml',
-            dirname(__DIR__).'/Fixtures/tasks.yaml'
-        ]);
+        $this->loadFixtures([TaskTestFixtures::class, UserTestFixtures::class]);
     }
 
     /**
@@ -49,8 +39,7 @@ class DefaultControllerTest extends WebTestCase
      */
     public function testHomepageAuthenticated()
     {
-        $fixtures = $this->loadCustomFixtures();
-        $this->login($this->client, $fixtures['user1']);
+        $this->login($this->client, $this->getUser('user1'));
         
         $crawler = $this->client->request('GET', '/');
         $this->assertResponseStatusCodeSame(Response::HTTP_OK);
@@ -65,8 +54,7 @@ class DefaultControllerTest extends WebTestCase
 
     public function createCrawlerHomepage(string $user = 'user1')
     {
-        $fixtures = $this->loadCustomFixtures();
-        $this->login($this->client, $fixtures[$user]);
+        $this->login($this->client, $this->getUser($user));
         $crawler = $this->client->request('GET', '/');
         return $crawler;
     }

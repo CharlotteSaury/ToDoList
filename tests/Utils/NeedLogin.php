@@ -3,6 +3,7 @@
 namespace App\Tests\Utils;
 
 use App\Entity\User;
+use App\Repository\UserRepository;
 use Symfony\Bundle\FrameworkBundle\KernelBrowser;
 use Symfony\Component\BrowserKit\Cookie;
 use Symfony\Component\Security\Core\Authentication\Token\UsernamePasswordToken;
@@ -21,5 +22,11 @@ trait NeedLogin
 
         $cookie = new Cookie($session->getName(), $session->getId());
         $client->getCookieJar()->set($cookie);
+    }
+
+    private function getUser(string $username = null)
+    {
+        $userRepository = static::$container->get(UserRepository::class);
+        return $userRepository->findOneBy(['username' => $username]);
     }
 }
