@@ -5,7 +5,7 @@ namespace App\Controller;
 use Exception;
 use App\Entity\Task;
 use App\Form\TaskType;
-use App\Repository\TaskRepository;
+use App\Manager\TaskManager;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\Routing\Annotation\Route;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\IsGranted;
@@ -14,19 +14,29 @@ use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 class TaskController extends AbstractController
 {
     /**
+     * @var TaskManager
+     */
+    private $taskManager;
+
+    public function __construct(TaskManager $taskManager)
+    {
+        $this->taskManager = $taskManager;
+    }
+
+    /**
      * @Route("/tasks/todo", name="task_todo_list")
      */
-    public function listAction(TaskRepository $taskRepository)
+    public function listAction()
     {
-        return $this->render('task/list.html.twig', ['tasks' => $taskRepository->findBy(['isDone' => false])]);
+        return $this->render('task/list.html.twig', ['tasks' => $this->taskManager->handleListAction()]);
     }
 
     /**
      * @Route("/tasks/done", name="task_done_list")
      */
-    public function doneListAction(TaskRepository $taskRepository)
+    public function doneListAction()
     {
-        return $this->render('task/list.html.twig', ['tasks' => $taskRepository->findBy(['isDone' => true])]);
+        return $this->render('task/list.html.twig', ['tasks' => $this->taskManager->handleListAction(true)]);
     }
 
     /**
@@ -36,19 +46,11 @@ class TaskController extends AbstractController
     {
         $task = new Task();
         $form = $this->createForm(TaskType::class, $task);
-
         $form->handleRequest($request);
 
         if ($form->isSubmitted() && $form->isValid()) {
-            $task->setAuthor($this->getUser());
-            
-            $em = $this->getDoctrine()->getManager();
-            
-            $em->persist($task);
-            $em->flush();
-
+            $this->taskManager->handleCreateOrUpdate($task);
             $this->addFlash('success', 'La tâche a été bien été ajoutée.');
-
             return $this->redirectToRoute('task_todo_list');
         }
 
@@ -65,10 +67,8 @@ class TaskController extends AbstractController
         $form->handleRequest($request);
 
         if ($form->isSubmitted() && $form->isValid()) {
-            $this->getDoctrine()->getManager()->flush();
-
+            $this->taskManager->handleCreateOrUpdate();
             $this->addFlash('success', 'La tâche a bien été modifiée.');
-
             return $this->redirectToRoute('task_todo_list');
         }
 
@@ -83,10 +83,8 @@ class TaskController extends AbstractController
      */
     public function toggleTaskAction(Task $task)
     {
-        $task->toggle(!$task->isDone());
-        $this->getDoctrine()->getManager()->flush();
+        $task = $this->taskManager->handleToggleAction($task);
         $status = ($task->isDone() == true) ? 'faite': 'non terminée';
-
         $this->addFlash('success', sprintf('La tâche %s a bien été marquée comme ' . $status, $task->getTitle()));
 
         return $this->redirectToRoute('task_todo_list');
@@ -98,12 +96,8 @@ class TaskController extends AbstractController
      */
     public function deleteTaskAction(Task $task)
     {
-        $em = $this->getDoctrine()->getManager();
-        $em->remove($task);
-        $em->flush();
-
+        $this->taskManager->handleDeleteAction($task);
         $this->addFlash('success', 'La tâche a bien été supprimée.');
-
         return $this->redirectToRoute('task_todo_list');
     }
 }
