@@ -81,6 +81,11 @@ class Task
         $this->content = $content;
     }
 
+    public function setIsDone($isDone)
+    {
+        $this->isDone = $isDone;
+    }
+
     public function isDone()
     {
         return $this->isDone;

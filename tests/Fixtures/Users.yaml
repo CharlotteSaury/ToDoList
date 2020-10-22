@@ -1,0 +1,9 @@
+App\Entity\User:
+  user1:
+    email: user1\@email.com
+    password: \$argon2id\$v=19\$m=65536,t=4,p=1\$LmhPaEVLYjVJa0ZkeThpTw\$nVMd3e36tfucZVagm9rLxIamNL5lTgFWAbuYhJ+Az0s
+    username: username1
+  user2:
+    email: user2\@email.com
+    password: \$argon2id\$v=19\$m=65536,t=4,p=1\$LmhPaEVLYjVJa0ZkeThpTw\$nVMd3e36tfucZVagm9rLxIamNL5lTgFWAbuYhJ+Az0s
+    username: username2
