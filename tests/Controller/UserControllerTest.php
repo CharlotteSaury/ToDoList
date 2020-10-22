@@ -125,8 +125,9 @@ class UserControllerTest extends WebTestCase
         $crawler = $this->client->request('GET', '/users/create');
         $this->assertSelectorTextSame('h1', 'Créer un utilisateur');
         $this->assertSelectorExists('form');
-        $this->assertCount(4, $crawler->filter('label'));
+        $this->assertCount(5, $crawler->filter('label'));
         $this->assertCount(5, $crawler->filter('input'));
+        $this->assertCount(1, $crawler->filter('select'));
         $this->assertSelectorTextSame('button', 'Ajouter');
     }
 
@@ -145,6 +146,7 @@ class UserControllerTest extends WebTestCase
         $form['user[password][first]'] = 'newpassword';
         $form['user[password][second]'] = 'newpassword';
         $form['user[email]'] = 'newemail@email.com';
+        $form['user[roles]']->select('ROLE_ADMIN');
         $this->client->submit($form);
 
         $this->assertResponseStatusCodeSame(302);
@@ -153,6 +155,7 @@ class UserControllerTest extends WebTestCase
         $this->assertSelectorTextSame('h1', 'Liste des utilisateurs');
         $this->assertSame(1, $crawler->filter('td:contains("newuser")')->count());
         $this->assertSame(1, $crawler->filter('td:contains("newemail@email.com")')->count());
+        $this->assertSame(1, $crawler->filter('td:contains("Admin")')->count());
     }
 
     /**
@@ -200,12 +203,12 @@ class UserControllerTest extends WebTestCase
         $fixtures = $this->loadCustomFixtures();
         $this->login($this->client, $fixtures['user1']);
         $crawler = $this->client->request('GET', '/users/1/edit');
-        //dd($crawler);
         $this->assertSelectorExists('form');
-        $this->assertCount(4, $crawler->filter('label'));
+        $this->assertCount(5, $crawler->filter('label'));
         $this->assertCount(5, $crawler->filter('input'));
         $this->assertSame(1, $crawler->filter('input[value="username1"]')->count());
         $this->assertSame(1, $crawler->filter('input[value="user1@email.com"]')->count());
+        $this->assertCount(1, $crawler->filter('select'));
         $this->assertSelectorTextSame('button', 'Modifier');
     }
 
@@ -225,6 +228,7 @@ class UserControllerTest extends WebTestCase
         $form['user[email]'] = 'newemail1@email.com';
         $form['user[password][first]'] = 'newpass';
         $form['user[password][second]'] = 'newpass';
+        $form['user[roles]']->select('ROLE_ADMIN');
         $this->client->submit($form);
 
         $this->assertResponseRedirects('/users');
@@ -232,6 +236,7 @@ class UserControllerTest extends WebTestCase
         $this->assertSame(1, $crawler->filter('div.alert.alert-success')->count());
         $this->assertSame(1, $crawler->filter('td:contains("newuser1")')->count());
         $this->assertSame(1, $crawler->filter('td:contains("newemail1@email.com")')->count());
+        $this->assertSame(1, $crawler->filter('td:contains("Admin")')->count());
     }
 
     /**
