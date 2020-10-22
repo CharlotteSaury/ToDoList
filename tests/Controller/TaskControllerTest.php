@@ -46,7 +46,8 @@ class TaskControllerTest extends WebTestCase
     public function provideAuthenticatedUserAccessibleUrls()
     {
         return [
-            ['GET', '/tasks'],
+            ['GET', '/tasks/done'],
+            ['GET', '/tasks/todo'],
             ['GET', '/tasks/create'],
             ['GET', '/tasks/1/edit'],
             ['GET', '/tasks/1/toggle'],
@@ -62,7 +63,8 @@ class TaskControllerTest extends WebTestCase
     public function testRestrictedPageAccessAuthenticated()
     {
         $routes = [
-            ['GET', '/tasks'],
+            ['GET', '/tasks/todo'],
+            ['GET', '/tasks/done'],
             ['GET', '/tasks/create'],
             ['GET', '/tasks/1/edit']
         ];
@@ -83,7 +85,7 @@ class TaskControllerTest extends WebTestCase
     {
         $fixtures = $this->loadCustomFixtures();
         $this->login($this->client, $fixtures['user1']);
-        $crawler = $this->client->request('GET', '/tasks');
+        $crawler = $this->client->request('GET', '/tasks/todo');
         $this->assertSame(1, $crawler->filter('a:contains("Se déconnecter")')->count());
         $this->assertSame(1, $crawler->filter('a:contains("Créer une tâche")')->count());
 
@@ -93,30 +95,33 @@ class TaskControllerTest extends WebTestCase
         $this->assertSelectorExists('.glyphicon-remove');
         $this->assertSame(2, $crawler->filter('.thumbnail button:contains("Marquer comme faite")')->count());
         $this->assertSelectorNotExists('.glyphicon-ok');
-        $this->assertSame(0, $crawler->filter('.thumbnail button:contains("Marquer comme non terminée")')->count());
+        $this->assertSame(0, $crawler->filter('.thumbnail button:contains("Marquer comme terminée")')->count());
+        $this->assertSame(2, $crawler->filter('.thumbnail h6:contains("Auteur: Anonyme")')->count());
     }
 
     /**
-     * Test integration of not done task list page for authenticated user
+     * Test integration of done task list page for authenticated user
      *
      * @return void
      */
-    /*public function testIntegrationNotDoneListActionAuthenticated()
+    public function testIntegrationDoneTaskListActionAuthenticated()
     {
         $fixtures = $this->loadCustomFixtures();
         $this->login($this->client, $fixtures['user1']);
-        $this->client->request('GET', '/tasks');
-        $this->assertSelectorExists('a', 'Se déconnecter');
-        $this->assertSelectorExists('a', 'Créer une tâche');
+        $crawler = $this->client->request('GET', '/tasks/done');
+
+        $this->assertSame(1, $crawler->filter('a:contains("Se déconnecter")')->count());
+        $this->assertSame(1, $crawler->filter('a:contains("Créer une tâche")')->count());
+
         $this->assertSelectorExists('.caption');
         $this->assertSelectorExists('.thumbnail h4 a');
-        $this->assertSelectorExists('.thumbnail button', 'Supprimer');
-        $this->assertSelectorExists('.glyphicon-remove');
-        $this->assertSelectorExists('.thumbnail button', 'Marquer comme faite');
-        $this->assertSelectorNotExists('.glyphicon-ok');
-        $this->assertSelectorNotExists('.thumbnail button', 'Marquer comme non terminée');
-        
-    }*/
+        $this->assertSame(1, $crawler->filter('.thumbnail button:contains("Supprimer")')->count());
+        $this->assertSelectorExists('.glyphicon-ok');
+        $this->assertSame(1, $crawler->filter('.thumbnail button:contains("Marquer non terminée")')->count());   
+        $this->assertSelectorNotExists('.glyphicon-remove');   
+        $this->assertSame(0, $crawler->filter('.thumbnail button:contains("Marquer comme faite")')->count());
+        $this->assertSame(1, $crawler->filter('.thumbnail h6:contains("Auteur: Anonyme")')->count());
+    }
 
     /**
      * Test integration of task creation page for authenticated user
@@ -155,11 +160,12 @@ class TaskControllerTest extends WebTestCase
         $form['task[content]'] = 'New content';
         $this->client->submit($form);
 
-        $this->assertResponseRedirects('/tasks');
+        $this->assertResponseRedirects('/tasks/todo');
         $crawler = $this->client->followRedirect();
         $this->assertSame(1, $crawler->filter('div.alert.alert-success')->count());
         $this->assertSame(1, $crawler->filter('h4 a:contains("New Task")')->count());
         $this->assertSame(1, $crawler->filter('p:contains("New content")')->count());
+        $this->assertSame(1, $crawler->filter('h6:contains("Auteur: username1")')->count());
     }
 
     /**
@@ -171,7 +177,7 @@ class TaskControllerTest extends WebTestCase
     {
         $fixtures = $this->loadCustomFixtures();
         $this->login($this->client, $fixtures['user1']);
-        $crawler = $this->client->request('GET', '/tasks');
+        $crawler = $this->client->request('GET', '/tasks/todo');
         $link = $crawler->selectLink('title1')->link();
         $crawler = $this->client->click($link);
         $this->assertSame(1, $crawler->filter('input[value="title1"]')->count());
@@ -215,7 +221,7 @@ class TaskControllerTest extends WebTestCase
         $form['task[content]'] = 'updated content';
         $this->client->submit($form);
 
-        $this->assertResponseRedirects('/tasks');
+        $this->assertResponseRedirects('/tasks/todo');
         $crawler = $this->client->followRedirect();
         $this->assertSame(1, $crawler->filter('div.alert.alert-success')->count());
         $this->assertSame(1, $crawler->filter('h4 a:contains("updated title")')->count());
@@ -232,11 +238,10 @@ class TaskControllerTest extends WebTestCase
         $fixtures = $this->loadCustomFixtures();
         $this->login($this->client, $fixtures['user1']);
         $crawler = $this->client->request('GET', '/tasks/1/toggle');
-        $this->assertResponseRedirects('/tasks');
+        $this->assertResponseRedirects('/tasks/todo');
         $crawler = $this->client->followRedirect();
         $this->assertSame(1, $crawler->filter('div.alert.alert-success')->count());
-        $this->assertSelectorExists('#task1 .glyphicon-ok');
-        $this->assertSelectorNotExists('#task1 .glyphicon-remove');
+        $this->assertSelectorNotExists('#task1');
     }
 
     /**
@@ -249,7 +254,7 @@ class TaskControllerTest extends WebTestCase
         $fixtures = $this->loadCustomFixtures();
         $this->login($this->client, $fixtures['user1']);
         $crawler = $this->client->request('GET', '/tasks/3/toggle');
-        $this->assertResponseRedirects('/tasks');
+        $this->assertResponseRedirects('/tasks/todo');
 
         $crawler = $this->client->followRedirect();
         $this->assertSame(1, $crawler->filter('div.alert.alert-success')->count());
@@ -267,7 +272,7 @@ class TaskControllerTest extends WebTestCase
         $fixtures = $this->loadCustomFixtures();
         $this->login($this->client, $fixtures['user1']);
         $crawler = $this->client->request('GET', '/tasks/1/delete');
-        $this->assertResponseRedirects('/tasks');
+        $this->assertResponseRedirects('/tasks/todo');
         $crawler = $this->client->followRedirect();
         $this->assertSame(1, $crawler->filter('div.alert.alert-success')->count());
         $this->assertSelectorNotExists('#task1');
@@ -292,5 +297,18 @@ class TaskControllerTest extends WebTestCase
             $this->client->request($route[0], $route[1]);
             $this->assertResponseStatusCodeSame(Response::HTTP_NOT_FOUND);
         }
+    }
+
+    /**
+     * Test validity of homepage header link
+     *
+     * @return void
+     */
+    public function testValidHomepageLink()
+    {
+        $crawler = $this->client->request('GET', '/login');
+        $link = $crawler->selectLink('To Do List app')->link();
+        $crawler = $this->client->click($link);
+        $this->assertResponseRedirects('http://localhost/login');
     }
 }
