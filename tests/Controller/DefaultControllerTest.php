@@ -3,9 +3,9 @@
 namespace App\Tests\Controller;
 
 use App\Tests\Utils\NeedLogin;
-use Symfony\Component\HttpFoundation\Response;
 use Liip\TestFixturesBundle\Test\FixturesTrait;
 use Symfony\Bundle\FrameworkBundle\Test\WebTestCase;
+use Symfony\Component\HttpFoundation\Response;
 
 class DefaultControllerTest extends WebTestCase
 {
@@ -27,14 +27,13 @@ class DefaultControllerTest extends WebTestCase
     public function loadCustomFixtures()
     {
         return $this->loadFixtureFiles([
-            dirname(__DIR__) . '/Fixtures/users.yaml',
-            dirname(__DIR__) . '/Fixtures/tasks.yaml'
+            \dirname(__DIR__).'/Fixtures/users.yaml',
+            \dirname(__DIR__).'/Fixtures/tasks.yaml',
         ]);
     }
 
     /**
-     * Test redirection to login when not authenticated user ask for homepage
-     *
+     * Test redirection to login when not authenticated user ask for homepage.
      */
     public function testHomepageNotAuthenticated()
     {
@@ -43,7 +42,7 @@ class DefaultControllerTest extends WebTestCase
     }
 
     /**
-     * Test access to homepage for authenticated user
+     * Test access to homepage for authenticated user.
      *
      * @return void
      */
@@ -51,7 +50,7 @@ class DefaultControllerTest extends WebTestCase
     {
         $fixtures = $this->loadCustomFixtures();
         $this->login($this->client, $fixtures['user1']);
-        
+
         $crawler = $this->client->request('GET', '/');
         $this->assertResponseStatusCodeSame(Response::HTTP_OK);
         $this->assertSame(1, $crawler->filter('html:contains("Bienvenue sur Todo List, l\'application vous permettant de gérer l\'ensemble de vos tâches sans effort !")')->count());
@@ -60,7 +59,6 @@ class DefaultControllerTest extends WebTestCase
         $this->assertSelectorExists('a', 'Consulter la liste des tâches à faire');
         $this->assertSelectorExists('a', 'Consulter la liste des tâches terminées');
         $this->assertSelectorExists('a', 'Créer un utilisateur');
-        
     }
 
     public function createCrawlerHomepage(string $user = 'user1')
@@ -68,12 +66,12 @@ class DefaultControllerTest extends WebTestCase
         $fixtures = $this->loadCustomFixtures();
         $this->login($this->client, $fixtures[$user]);
         $crawler = $this->client->request('GET', '/');
+
         return $crawler;
     }
 
-
     /**
-     * Test validity of task creation link
+     * Test validity of task creation link.
      *
      * @return void
      */
@@ -87,7 +85,7 @@ class DefaultControllerTest extends WebTestCase
     }
 
     /**
-     * Test validity of to do task list link
+     * Test validity of to do task list link.
      *
      * @return void
      */
@@ -103,7 +101,7 @@ class DefaultControllerTest extends WebTestCase
     }
 
     /**
-     * Test validity of done task list link
+     * Test validity of done task list link.
      *
      * @return void
      */
@@ -118,7 +116,7 @@ class DefaultControllerTest extends WebTestCase
     }
 
     /**
-     * Test validity of create user link
+     * Test validity of create user link.
      *
      * @return void
      */
@@ -131,7 +129,7 @@ class DefaultControllerTest extends WebTestCase
     }
 
     /**
-     * Test validity of logout link
+     * Test validity of logout link.
      *
      * @return void
      */

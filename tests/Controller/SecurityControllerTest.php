@@ -3,9 +3,9 @@
 namespace App\Tests\Controller;
 
 use App\Tests\Utils\NeedLogin;
-use Symfony\Component\HttpFoundation\Response;
 use Liip\TestFixturesBundle\Test\FixturesTrait;
 use Symfony\Bundle\FrameworkBundle\Test\WebTestCase;
+use Symfony\Component\HttpFoundation\Response;
 
 class SecurityControllerTest extends WebTestCase
 {
@@ -27,12 +27,12 @@ class SecurityControllerTest extends WebTestCase
     public function loadCustomFixtures()
     {
         return $this->loadFixtureFiles([
-            dirname(__DIR__) . '/Fixtures/users.yaml'
+            \dirname(__DIR__).'/Fixtures/users.yaml',
         ]);
     }
 
     /**
-     * Test login page not authenticated user
+     * Test login page not authenticated user.
      *
      * @return void
      */
@@ -48,7 +48,7 @@ class SecurityControllerTest extends WebTestCase
     }
 
     /**
-     * Test login with valid credentials
+     * Test login with valid credentials.
      *
      * @return void
      */
@@ -71,7 +71,7 @@ class SecurityControllerTest extends WebTestCase
     }
 
     /**
-     * Test login with invalid credentials
+     * Test login with invalid credentials.
      *
      * @return void
      */
@@ -98,5 +98,4 @@ class SecurityControllerTest extends WebTestCase
         $this->client->request('GET', '/logout');
         $this->assertResponseRedirects('http://localhost/');
     }
-
 }

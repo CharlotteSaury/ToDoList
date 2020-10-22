@@ -32,7 +32,7 @@ class UserManager
     }
 
     /**
-     * Handle users list recovery from database
+     * Handle users list recovery from database.
      *
      * @return void
      */
@@ -42,18 +42,19 @@ class UserManager
     }
 
     /**
-     * Handle user creation or edition in database
+     * Handle user creation or edition in database.
      *
-     * @param User $user
-     * @param boolean $persist
+     * @param User   $user
+     * @param bool   $persist
      * @param string $password
+     *
      * @return void
      */
     public function handleCreateOrUpdate(User $user, bool $persist = true, string $password = null)
     {
-        if ($user->getPassword() != null) {
+        if (null !== $user->getPassword()) {
             $password = $this->encoder->encodePassword($user, $user->getPassword());
-        }  
+        }
         $user->setPassword($password);
         if ($persist) {
             $this->entityManager->persist($user);

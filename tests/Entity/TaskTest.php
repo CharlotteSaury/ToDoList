@@ -42,6 +42,6 @@ class TaskTest extends KernelTestCase
     {
         $task = new Task();
         $task->toggle(!$task->isDone());
-        $this->assertSame(true, $task->isDone());
+        $this->assertTrue($task->isDone());
     }
 }

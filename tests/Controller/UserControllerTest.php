@@ -3,9 +3,9 @@
 namespace App\Tests\Controller;
 
 use App\Tests\Utils\NeedLogin;
-use Symfony\Component\HttpFoundation\Response;
 use Liip\TestFixturesBundle\Test\FixturesTrait;
 use Symfony\Bundle\FrameworkBundle\Test\WebTestCase;
+use Symfony\Component\HttpFoundation\Response;
 
 class UserControllerTest extends WebTestCase
 {
@@ -27,21 +27,20 @@ class UserControllerTest extends WebTestCase
     public function loadCustomFixtures()
     {
         return $this->loadFixtureFiles([
-            dirname(__DIR__) . '/Fixtures/tasks.yaml',
-            dirname(__DIR__) . '/Fixtures/users.yaml'
+            \dirname(__DIR__).'/Fixtures/tasks.yaml',
+            \dirname(__DIR__).'/Fixtures/users.yaml',
         ]);
     }
 
     /**
      * Test Redirection to login route for visitors trying to access pages that require authenticated status.
-     *
      */
     public function testAccessibleUsersPagesNotAuthenticated()
     {
         $routes = [
             ['GET', '/users'],
             ['GET', '/users/1/edit'],
-            ['GET', '/users/create']
+            ['GET', '/users/create'],
         ];
 
         foreach ($routes as $route) {
@@ -51,7 +50,7 @@ class UserControllerTest extends WebTestCase
     }
 
     /**
-     * Test denied access to user managment pages for authenticated user granted role_user
+     * Test denied access to user managment pages for authenticated user granted role_user.
      *
      * @return void
      */
@@ -60,7 +59,7 @@ class UserControllerTest extends WebTestCase
         $routes = [
             ['GET', '/users'],
             ['GET', '/users/1/edit'],
-            ['GET', '/users/create']
+            ['GET', '/users/create'],
         ];
         $fixtures = $this->loadCustomFixtures();
         $this->login($this->client, $fixtures['user1']);
@@ -71,7 +70,7 @@ class UserControllerTest extends WebTestCase
     }
 
     /**
-     * Test access to user managment pages for authenticated user granted role_admin
+     * Test access to user managment pages for authenticated user granted role_admin.
      *
      * @return void
      */
@@ -80,7 +79,7 @@ class UserControllerTest extends WebTestCase
         $routes = [
             ['GET', '/users'],
             ['GET', '/users/1/edit'],
-            ['GET', '/users/create']
+            ['GET', '/users/create'],
         ];
         $fixtures = $this->loadCustomFixtures();
         $this->login($this->client, $fixtures['admin1']);
@@ -91,7 +90,7 @@ class UserControllerTest extends WebTestCase
     }
 
     /**
-     * Test integration of users list page for authenticated user
+     * Test integration of users list page for authenticated user.
      *
      * @return void
      */
@@ -110,7 +109,7 @@ class UserControllerTest extends WebTestCase
     }
 
     /**
-     * Test validity of create user link
+     * Test validity of create user link.
      *
      * @return void
      */
@@ -125,7 +124,7 @@ class UserControllerTest extends WebTestCase
     }
 
     /**
-     * Test integration of user creation page
+     * Test integration of user creation page.
      *
      * @return void
      */
@@ -143,7 +142,7 @@ class UserControllerTest extends WebTestCase
     }
 
     /**
-     * Test new valid user creation
+     * Test new valid user creation.
      *
      * @return void
      */
@@ -171,7 +170,7 @@ class UserControllerTest extends WebTestCase
     }
 
     /**
-     * Test invalid user creation
+     * Test invalid user creation.
      *
      * @return void
      */
@@ -192,7 +191,7 @@ class UserControllerTest extends WebTestCase
     }
 
     /**
-     * Test validity of edit user link
+     * Test validity of edit user link.
      *
      * @return void
      */
@@ -207,7 +206,7 @@ class UserControllerTest extends WebTestCase
     }
 
     /**
-     * Test integration of user edition page for authenticated user
+     * Test integration of user edition page for authenticated user.
      *
      * @return void
      */
@@ -226,7 +225,7 @@ class UserControllerTest extends WebTestCase
     }
 
     /**
-     * Test valid user edition
+     * Test valid user edition.
      *
      * @return void
      */
@@ -253,7 +252,7 @@ class UserControllerTest extends WebTestCase
     }
 
     /**
-     * Test invalid user edition
+     * Test invalid user edition.
      *
      * @return void
      */
@@ -275,7 +274,7 @@ class UserControllerTest extends WebTestCase
     }
 
     /**
-     * Test 404 error response when action with unexisting resource
+     * Test 404 error response when action with unexisting resource.
      *
      * @return void
      */
@@ -287,7 +286,4 @@ class UserControllerTest extends WebTestCase
         $this->client->request('GET', '/users/10/edit');
         $this->assertResponseStatusCodeSame(Response::HTTP_NOT_FOUND);
     }
-
-
-
 }
