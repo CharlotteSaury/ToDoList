@@ -91,9 +91,9 @@ class TaskControllerTest extends WebTestCase
 
         $this->assertSelectorExists('.caption');
         $this->assertSelectorExists('.thumbnail h4 a');
-        $this->assertSame(2, $crawler->filter('.thumbnail button:contains("Supprimer")')->count());
+        $this->assertSame(4, $crawler->filter('.thumbnail button:contains("Supprimer")')->count());
         $this->assertSelectorExists('.glyphicon-remove');
-        $this->assertSame(2, $crawler->filter('.thumbnail button:contains("Marquer comme faite")')->count());
+        $this->assertSame(4, $crawler->filter('.thumbnail button:contains("Marquer comme faite")')->count());
         $this->assertSelectorNotExists('.glyphicon-ok');
         $this->assertSame(0, $crawler->filter('.thumbnail button:contains("Marquer comme terminée")')->count());
         $this->assertSame(2, $crawler->filter('.thumbnail h6:contains("Auteur: Anonyme")')->count());
@@ -165,7 +165,7 @@ class TaskControllerTest extends WebTestCase
         $this->assertSame(1, $crawler->filter('div.alert.alert-success')->count());
         $this->assertSame(1, $crawler->filter('h4 a:contains("New Task")')->count());
         $this->assertSame(1, $crawler->filter('p:contains("New content")')->count());
-        $this->assertSame(1, $crawler->filter('h6:contains("Auteur: username1")')->count());
+        $this->assertSame(2, $crawler->filter('h6:contains("Auteur: username1")')->count());
     }
 
     /**
@@ -263,19 +263,65 @@ class TaskControllerTest extends WebTestCase
     }
 
     /**
-     * Test delete action
+     * Test allowed delete action by author
      *
      * @return void
      */
-    public function testDeleteAction()
+    public function testDeleteActionByAuthor()
     {
         $fixtures = $this->loadCustomFixtures();
         $this->login($this->client, $fixtures['user1']);
+        $crawler = $this->client->request('GET', '/tasks/4/delete');
+        $this->assertResponseRedirects('/tasks/todo');
+        $crawler = $this->client->followRedirect();
+        $this->assertSame(1, $crawler->filter('div.alert.alert-success')->count());
+        $this->assertSelectorNotExists('#task4');
+    }
+
+    /**
+     * Test forbidden delete action by other user than author
+     *
+     * @return void
+     */
+    public function testDeleteActionByNotAuthor()
+    {
+        $fixtures = $this->loadCustomFixtures();
+        $this->login($this->client, $fixtures['user1']);
+        $this->client->request('GET', '/tasks/5/delete');
+        $this->assertResponseStatusCodeSame(Response::HTTP_UNAUTHORIZED);
+        $this->client->request('GET', '/tasks/todo');
+        $this->assertSelectorExists('#task5');
+    }
+
+    /**
+     * Test allowed anonymous task delete action by admin
+     *
+     * @return void
+     */
+    public function testAnonymousTaskDeleteActionByAdmin()
+    {
+        $fixtures = $this->loadCustomFixtures();
+        $this->login($this->client, $fixtures['admin1']);
         $crawler = $this->client->request('GET', '/tasks/1/delete');
         $this->assertResponseRedirects('/tasks/todo');
         $crawler = $this->client->followRedirect();
         $this->assertSame(1, $crawler->filter('div.alert.alert-success')->count());
         $this->assertSelectorNotExists('#task1');
+    }
+
+    /**
+     * Test forbidden anonymous task delete action by not granted role_admin
+     *
+     * @return void
+     */
+    public function testAnonymousTaskDeleteActionByNotAdmin()
+    {
+        $fixtures = $this->loadCustomFixtures();
+        $this->login($this->client, $fixtures['user1']);
+        $this->client->request('GET', '/tasks/1/delete');
+        $this->assertResponseStatusCodeSame(Response::HTTP_UNAUTHORIZED);
+        $this->client->request('GET', '/tasks/todo');
+        $this->assertSelectorExists('#task1');
     }
 
     /**

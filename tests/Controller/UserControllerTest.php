@@ -40,39 +40,50 @@ class UserControllerTest extends WebTestCase
     {
         $routes = [
             ['GET', '/users'],
-            ['GET', '/users/1/edit']
+            ['GET', '/users/1/edit'],
+            ['GET', '/users/create']
         ];
 
         foreach ($routes as $route) {
             $this->client->request($route[0], $route[1]);
-            $this->assertResponseStatusCodeSame(Response::HTTP_OK);
-            //$this->assertResponseRedirects('http://localhost/login');
+            $this->assertResponseRedirects('http://localhost/login');
         }
     }
 
     /**
-     * Test unrestricted access to user creation page
-     *
-     */
-    public function testAccessUserCreationNotAuthenticated()
-    {
-        $this->client->request('GET', '/users/create');
-        $this->assertResponseStatusCodeSame(Response::HTTP_OK);
-    }
-
-    /**
-     * Test access to user managment pages for authenticated user
+     * Test denied access to user managment pages for authenticated user granted role_user
      *
      * @return void
      */
-    public function testRestrictedPageAccessAuthenticated()
+    public function testRestrictedPageAccessAuthenticatedUser()
     {
         $routes = [
             ['GET', '/users'],
-            ['GET', '/users/1/edit']
+            ['GET', '/users/1/edit'],
+            ['GET', '/users/create']
         ];
         $fixtures = $this->loadCustomFixtures();
         $this->login($this->client, $fixtures['user1']);
+        foreach ($routes as $route) {
+            $this->client->request($route[0], $route[1]);
+            $this->assertResponseStatusCodeSame(Response::HTTP_FORBIDDEN);
+        }
+    }
+
+    /**
+     * Test access to user managment pages for authenticated user granted role_admin
+     *
+     * @return void
+     */
+    public function testRestrictedPageAccessAuthenticatedAdmin()
+    {
+        $routes = [
+            ['GET', '/users'],
+            ['GET', '/users/1/edit'],
+            ['GET', '/users/create']
+        ];
+        $fixtures = $this->loadCustomFixtures();
+        $this->login($this->client, $fixtures['admin1']);
         foreach ($routes as $route) {
             $this->client->request($route[0], $route[1]);
             $this->assertResponseStatusCodeSame(Response::HTTP_OK);
@@ -87,7 +98,7 @@ class UserControllerTest extends WebTestCase
     public function testIntegrationUserListActionAuthenticated()
     {
         $fixtures = $this->loadCustomFixtures();
-        $this->login($this->client, $fixtures['user1']);
+        $this->login($this->client, $fixtures['admin1']);
         $crawler = $this->client->request('GET', '/users');
         $this->assertSame(1, $crawler->filter('a:contains("Créer un utilisateur")')->count());
         $this->assertSelectorTextSame('h1', 'Liste des utilisateurs');
@@ -106,7 +117,7 @@ class UserControllerTest extends WebTestCase
     public function testValidCreateUserLinkUsersPage()
     {
         $fixtures = $this->loadCustomFixtures();
-        $this->login($this->client, $fixtures['user1']);
+        $this->login($this->client, $fixtures['admin1']);
         $crawler = $this->client->request('GET', '/users');
         $link = $crawler->selectLink('Créer un utilisateur')->link();
         $crawler = $this->client->click($link);
@@ -121,7 +132,7 @@ class UserControllerTest extends WebTestCase
     public function testIntegrationUserCreationPage()
     {
         $fixtures = $this->loadCustomFixtures();
-        $this->login($this->client, $fixtures['user1']);
+        $this->login($this->client, $fixtures['admin1']);
         $crawler = $this->client->request('GET', '/users/create');
         $this->assertSelectorTextSame('h1', 'Créer un utilisateur');
         $this->assertSelectorExists('form');
@@ -136,9 +147,10 @@ class UserControllerTest extends WebTestCase
      *
      * @return void
      */
-    public function testValidUserCreationAnonymously()
+    public function testValidUserCreationByAdmin()
     {
-        $this->loadCustomFixtures();
+        $fixtures = $this->loadCustomFixtures();
+        $this->login($this->client, $fixtures['admin1']);
         $crawler = $this->client->request('GET', '/users/create');
 
         $form = $crawler->selectButton('Ajouter')->form();
@@ -155,7 +167,7 @@ class UserControllerTest extends WebTestCase
         $this->assertSelectorTextSame('h1', 'Liste des utilisateurs');
         $this->assertSame(1, $crawler->filter('td:contains("newuser")')->count());
         $this->assertSame(1, $crawler->filter('td:contains("newemail@email.com")')->count());
-        $this->assertSame(1, $crawler->filter('td:contains("Admin")')->count());
+        $this->assertSame(2, $crawler->filter('td:contains("Admin")')->count());
     }
 
     /**
@@ -163,9 +175,10 @@ class UserControllerTest extends WebTestCase
      *
      * @return void
      */
-    public function testInvalidUserCreationAnonymously()
+    public function testInvalidUserCreationByAdmin()
     {
-        $this->loadCustomFixtures();
+        $fixtures = $this->loadCustomFixtures();
+        $this->login($this->client, $fixtures['admin1']);
         $crawler = $this->client->request('GET', '/users/create');
 
         $form = $crawler->selectButton('Ajouter')->form();
@@ -186,7 +199,7 @@ class UserControllerTest extends WebTestCase
     public function testValidEditUserLinkUsersPage()
     {
         $fixtures = $this->loadCustomFixtures();
-        $this->login($this->client, $fixtures['user1']);
+        $this->login($this->client, $fixtures['admin1']);
         $crawler = $this->client->request('GET', '/users');
         $link = $crawler->selectLink('Edit')->link();
         $crawler = $this->client->click($link);
@@ -201,7 +214,7 @@ class UserControllerTest extends WebTestCase
     public function testIntegrationUserEditionPage()
     {
         $fixtures = $this->loadCustomFixtures();
-        $this->login($this->client, $fixtures['user1']);
+        $this->login($this->client, $fixtures['admin1']);
         $crawler = $this->client->request('GET', '/users/1/edit');
         $this->assertSelectorExists('form');
         $this->assertCount(5, $crawler->filter('label'));
@@ -220,7 +233,7 @@ class UserControllerTest extends WebTestCase
     public function testValidUserEdition()
     {
         $fixtures = $this->loadCustomFixtures();
-        $this->login($this->client, $fixtures['user1']);
+        $this->login($this->client, $fixtures['admin1']);
         $crawler = $this->client->request('GET', '/users/1/edit');
 
         $form = $crawler->selectButton('Modifier')->form();
@@ -236,7 +249,7 @@ class UserControllerTest extends WebTestCase
         $this->assertSame(1, $crawler->filter('div.alert.alert-success')->count());
         $this->assertSame(1, $crawler->filter('td:contains("newuser1")')->count());
         $this->assertSame(1, $crawler->filter('td:contains("newemail1@email.com")')->count());
-        $this->assertSame(1, $crawler->filter('td:contains("Admin")')->count());
+        $this->assertSame(2, $crawler->filter('td:contains("Admin")')->count());
     }
 
     /**
@@ -247,7 +260,7 @@ class UserControllerTest extends WebTestCase
     public function testInvalidUserEdition()
     {
         $fixtures = $this->loadCustomFixtures();
-        $this->login($this->client, $fixtures['user1']);
+        $this->login($this->client, $fixtures['admin1']);
         $crawler = $this->client->request('GET', '/users/1/edit');
 
         $form = $crawler->selectButton('Modifier')->form();
@@ -269,7 +282,7 @@ class UserControllerTest extends WebTestCase
     public function testUnexistingUserAction()
     {
         $fixtures = $this->loadCustomFixtures();
-        $this->login($this->client, $fixtures['user1']);
+        $this->login($this->client, $fixtures['admin1']);
 
         $this->client->request('GET', '/users/10/edit');
         $this->assertResponseStatusCodeSame(Response::HTTP_NOT_FOUND);

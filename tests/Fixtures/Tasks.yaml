@@ -12,3 +12,13 @@ App\Entity\Task:
     content: content3
     created_at: <datetime()>
     is_done: true
+  task4:
+    title: title4
+    content: content4
+    created_at: <datetime()>
+    author: '@user1'
+  task5:
+    title: title5
+    content: content5
+    created_at: <datetime()>
+    author: '@user2'

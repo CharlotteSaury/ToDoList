@@ -63,10 +63,10 @@ class DefaultControllerTest extends WebTestCase
         
     }
 
-    public function createCrawlerHomepage()
+    public function createCrawlerHomepage(string $user = 'user1')
     {
         $fixtures = $this->loadCustomFixtures();
-        $this->login($this->client, $fixtures['user1']);
+        $this->login($this->client, $fixtures[$user]);
         $crawler = $this->client->request('GET', '/');
         return $crawler;
     }
@@ -97,8 +97,8 @@ class DefaultControllerTest extends WebTestCase
         $link = $crawler->selectLink('Consulter la liste des tâches à faire')->link();
         $crawler = $this->client->click($link);
         //$this->assertSelectorExists('.thumbnail');
-        $this->assertSame(2, $crawler->filter('.thumbnail')->count());
-        $this->assertSame(2, $crawler->filter('.glyphicon-remove')->count());
+        $this->assertSame(4, $crawler->filter('.thumbnail')->count());
+        $this->assertSame(4, $crawler->filter('.glyphicon-remove')->count());
         $this->assertSelectorNotExists('.glyphicon-ok');
     }
 
@@ -124,7 +124,7 @@ class DefaultControllerTest extends WebTestCase
      */
     public function testValidCreateUserLink()
     {
-        $crawler = $this->createCrawlerHomepage();
+        $crawler = $this->createCrawlerHomepage('admin1');
         $link = $crawler->selectLink('Créer un utilisateur')->link();
         $crawler = $this->client->click($link);
         $this->assertSelectorTextSame('h1', 'Créer un utilisateur');
