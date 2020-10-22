@@ -33,34 +33,16 @@ class UserManager
 
     public function handleListAction()
     {
-        try {
-            return $this->userRepository->findAll();
-        } catch (\Exception $exception) {
-            throw $exception;
-        }
+        return $this->userRepository->findAll();
     }
 
     public function handleCreateOrUpdate(User $user, bool $persist = true)
     {
-        try {
-            $password = $this->encoder->encodePassword($user, $user->getPassword());
-                $user->setPassword($password);
-            if ($persist) {
-                $this->entityManager->persist($user);
-            }
-            $this->entityManager->flush();
-        } catch (\Exception $exception) {
-            throw $exception;
+        $password = $this->encoder->encodePassword($user, $user->getPassword());
+        $user->setPassword($password);
+        if ($persist) {
+            $this->entityManager->persist($user);
         }
-    }
-
-    public function handleDeleteAction(User $user)
-    {
-        try {
-            $this->entityManager->remove($user);
-            $this->entityManager->flush();
-        } catch (\Exception $exception) {
-            throw $exception;
-        }
+        $this->entityManager->flush();
     }
 }

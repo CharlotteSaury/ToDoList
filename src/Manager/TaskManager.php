@@ -33,44 +33,28 @@ class TaskManager
 
     public function handleListAction(bool $isDone = false)
     {
-        try {
-            return $this->taskRepository->findBy(['isDone' => $isDone]);
-        } catch (\Exception $exception) {
-            throw $exception;
-        }
+        return $this->taskRepository->findBy(['isDone' => $isDone]);
     }
 
     public function handleToggleAction(Task $task)
     {
-        try {
-            $task->toggle(!$task->isDone());
-            $this->entityManager->flush();
-            return $task;
-        } catch (\Exception $exception) {
-            throw $exception;
-        }
+        $task->toggle(!$task->isDone());
+        $this->entityManager->flush();
+        return $task;
     }
 
     public function handleCreateOrUpdate(Task $task = null)
     {
-        try {
-            if ($task != null) {
-                $task->setAuthor($this->security->getUser());
-                $this->entityManager->persist($task);
-            }
-            $this->entityManager->flush();
-        } catch (\Exception $exception) {
-            throw $exception;
+        if ($task != null) {
+            $task->setAuthor($this->security->getUser());
+            $this->entityManager->persist($task);
         }
+        $this->entityManager->flush();
     }
 
     public function handleDeleteAction(Task $task)
     {
-        try {
-            $this->entityManager->remove($task);
-            $this->entityManager->flush();
-        } catch (\Exception $exception) {
-            throw $exception;
-        }
+        $this->entityManager->remove($task);
+        $this->entityManager->flush();
     }
 }
