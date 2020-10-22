@@ -83,5 +83,4 @@ class UserTest extends KernelTestCase
         $user->removeTask($tasks[1]);
         $this->assertSame(8, count($tasks));
     }
-
 }

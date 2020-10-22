@@ -22,8 +22,8 @@ body {
 }
 
 .caption {
-    height: 130px;
-    overflow: hidden;
+    height: 150px;
+    overflow-y: scroll;
 }
 
 .caption h4 {
@@ -51,4 +51,16 @@ body {
 
 footer {
     margin: 50px 0;
+}
+
+.row-button {
+    margin-bottom: 2rem;
+}
+
+.task-card {
+    margin-bottom: 2rem;
+}
+
+.btn-create {
+    margin-right: 2rem;
 }

@@ -37,8 +37,11 @@
 
         <!-- Page Content -->
         <div class="container">
-            <div class="row">
-                <a href="{{ path('user_create') }}" class="btn btn-primary">Créer un utilisateur</a>
+            <div class="row row-button">
+                {% if is_granted("ROLE_ADMIN") %}
+                    <a href="{{ path('user_create') }}" class="btn btn-primary">Créer un utilisateur</a>
+                    <a href="{{ path('user_list') }}" class="btn btn-primary">Voir les utilisateurs</a>
+                {% endif %}
 
                 {% if app.user %}
                 <a href="{{ path('logout') }}" class="pull-right btn btn-danger">Se déconnecter</a>
@@ -51,13 +54,13 @@
 
             <div class="row">
                 <div class="col-md-12">
-                    {% for flash_message in app.session.flashBag.get('success') %}
+                    {% for flash_message in app.flashes('success') %}
                         <div class="alert alert-success" role="alert">
                             <strong>Superbe !</strong> {{ flash_message }}
                         </div>
                     {% endfor %}
 
-                    {% for flash_message in app.session.flashBag.get('error') %}
+                    {% for flash_message in app.flashes('error') %}
                         <div class="alert alert-danger" role="alert">
                             <strong>Oops !</strong> {{ flash_message }}
                         </div>

@@ -5,7 +5,6 @@ namespace App\Controller;
 use App\Entity\User;
 use App\Form\UserType;
 use App\Manager\UserManager;
-use App\Repository\UserRepository;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\Routing\Annotation\Route;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
@@ -24,7 +23,7 @@ class UserController extends AbstractController
     /**
      * @Route("/users", name="user_list")
      */
-    public function listAction(UserRepository $userRepository)
+    public function listAction()
     {
         return $this->render('user/list.html.twig', ['users' => $this->userManager->handleListAction()]);
     }
@@ -35,7 +34,9 @@ class UserController extends AbstractController
     public function createAction(Request $request)
     {
         $user = new User();
-        $form = $this->createForm(UserType::class, $user);
+        $form = $this->createForm(UserType::class, $user, [
+            'validation_groups' => ['Default', 'registration'],
+        ]);
         $form->handleRequest($request);
 
         if ($form->isSubmitted() && $form->isValid()) {
@@ -52,11 +53,14 @@ class UserController extends AbstractController
      */
     public function editAction(User $user, Request $request)
     {
-        $form = $this->createForm(UserType::class, $user);
+        $form = $this->createForm(UserType::class, $user, [
+            'require_password' => false
+        ]);
+        $password = $user->getPassword();
         $form->handleRequest($request);
 
         if ($form->isSubmitted() && $form->isValid()) {
-            $this->userManager->handleCreateOrUpdate($user, false);
+            $this->userManager->handleCreateOrUpdate($user, false, $password);
             $this->addFlash('success', "L'utilisateur a bien été modifié");
             return $this->redirectToRoute('user_list');
         }
