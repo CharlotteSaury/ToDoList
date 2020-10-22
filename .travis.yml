@@ -3,10 +3,11 @@ sudo: false
 php:
   - '7.4.0'
 
-services:
-  - mysql
+env:
+  - DB=mysql
 
 before_script:
+  - if [[ "$DB" == "mysql" ]]; then mysql -e "CREATE DATABASE IF NOT EXISTS ToDoListtests; GRANT ALL PRIVILEGES ON ToDoListtests.* to travis@'localhost'"; fi
   - composer install
   - php bin/console doctrine:database:create --env=test
   - php bin/console doctrine:schema:update --force --env=test
