@@ -3,6 +3,9 @@ sudo: false
 php:
   - '7.4.0'
 
+services:
+  - mysql
+
 before_script:
   - composer install
   - php bin/console doctrine:database:create --env=test
