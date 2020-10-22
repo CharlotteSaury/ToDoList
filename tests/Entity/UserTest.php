@@ -5,6 +5,8 @@ namespace App\Tests\Entity;
 use App\Entity\Task;
 use App\Entity\User;
 use App\Tests\Utils\AssertHasErrors;
+use App\DataFixtures\TaskTestFixtures;
+use App\DataFixtures\UserTestFixtures;
 use Liip\TestFixturesBundle\Test\FixturesTrait;
 use Symfony\Bundle\FrameworkBundle\Test\KernelTestCase;
 
@@ -58,9 +60,7 @@ class UserTest extends KernelTestCase
      */
     public function testInvalidUniqueEmail()
     {
-        $this->loadFixtureFiles([
-            dirname(__DIR__).'/Fixtures/Users.yaml',
-        ]);
+        $this->loadFixtures([TaskTestFixtures::class, UserTestFixtures::class]);
         $invalidUser = $this->getEntity();
         $invalidUser->setEmail('user1@email.com');
         $this->assertHasErrors($invalidUser, 1);
