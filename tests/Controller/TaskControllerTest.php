@@ -3,9 +3,11 @@
 namespace App\Tests\Controller;
 
 use App\Tests\Utils\NeedLogin;
+use App\DataFixtures\TaskTestFixtures;
+use App\DataFixtures\UserTestFixtures;
+use Symfony\Component\HttpFoundation\Response;
 use Liip\TestFixturesBundle\Test\FixturesTrait;
 use Symfony\Bundle\FrameworkBundle\Test\WebTestCase;
-use Symfony\Component\HttpFoundation\Response;
 
 class TaskControllerTest extends WebTestCase
 {
@@ -17,19 +19,7 @@ class TaskControllerTest extends WebTestCase
     public function setUp()
     {
         $this->client = static::createClient();
-    }
-
-    /**
-     * Load fixtures files.
-     *
-     * @return array
-     */
-    public function loadCustomFixtures()
-    {
-        return $this->loadFixtureFiles([
-            \dirname(__DIR__).'/Fixtures/tasks.yaml',
-            \dirname(__DIR__).'/Fixtures/users.yaml',
-        ]);
+        $this->loadFixtures([TaskTestFixtures::class, UserTestFixtures::class]);
     }
 
     /**
@@ -51,12 +41,12 @@ class TaskControllerTest extends WebTestCase
             ['GET', '/tasks/create'],
             ['GET', '/tasks/1/edit'],
             ['GET', '/tasks/1/toggle'],
-            ['DELETE', '/tasks/1/delete'],
+            ['DELETE', '/tasks/1/delete']
         ];
     }
 
     /**
-     * Test access to restricted pages related to tasks for authenticated user.
+     * Test access to restricted pages related to tasks for authenticated user
      *
      * @return void
      */
@@ -66,10 +56,9 @@ class TaskControllerTest extends WebTestCase
             ['GET', '/tasks/todo'],
             ['GET', '/tasks/done'],
             ['GET', '/tasks/create'],
-            ['GET', '/tasks/1/edit'],
+            ['GET', '/tasks/1/edit']
         ];
-        $fixtures = $this->loadCustomFixtures();
-        $this->login($this->client, $fixtures['user1']);
+        $this->login($this->client, $this->getUser('user1'));
         foreach ($routes as $route) {
             $this->client->request($route[0], $route[1]);
             $this->assertResponseStatusCodeSame(Response::HTTP_OK);
@@ -77,14 +66,13 @@ class TaskControllerTest extends WebTestCase
     }
 
     /**
-     * Test integration of to do task list page for authenticated user.
+     * Test integration of to do task list page for authenticated user
      *
      * @return void
      */
     public function testIntegrationToDoTaskListActionAuthenticated()
     {
-        $fixtures = $this->loadCustomFixtures();
-        $this->login($this->client, $fixtures['user1']);
+        $this->login($this->client, $this->getUser('user1'));
         $crawler = $this->client->request('GET', '/tasks/todo');
         $this->assertSame(1, $crawler->filter('a:contains("Se déconnecter")')->count());
         $this->assertSame(1, $crawler->filter('a:contains("Créer une tâche")')->count());
@@ -100,14 +88,13 @@ class TaskControllerTest extends WebTestCase
     }
 
     /**
-     * Test integration of done task list page for authenticated user.
+     * Test integration of done task list page for authenticated user
      *
      * @return void
      */
     public function testIntegrationDoneTaskListActionAuthenticated()
     {
-        $fixtures = $this->loadCustomFixtures();
-        $this->login($this->client, $fixtures['user1']);
+        $this->login($this->client, $this->getUser('user1'));
         $crawler = $this->client->request('GET', '/tasks/done');
 
         $this->assertSame(1, $crawler->filter('a:contains("Se déconnecter")')->count());
@@ -117,21 +104,20 @@ class TaskControllerTest extends WebTestCase
         $this->assertSelectorExists('.thumbnail h4 a');
         $this->assertSame(1, $crawler->filter('.thumbnail button:contains("Supprimer")')->count());
         $this->assertSelectorExists('.glyphicon-ok');
-        $this->assertSame(1, $crawler->filter('.thumbnail button:contains("Marquer non terminée")')->count());
-        $this->assertSelectorNotExists('.glyphicon-remove');
+        $this->assertSame(1, $crawler->filter('.thumbnail button:contains("Marquer non terminée")')->count());   
+        $this->assertSelectorNotExists('.glyphicon-remove');   
         $this->assertSame(0, $crawler->filter('.thumbnail button:contains("Marquer comme faite")')->count());
         $this->assertSame(1, $crawler->filter('.thumbnail h6:contains("Auteur: Anonyme")')->count());
     }
 
     /**
-     * Test integration of task creation page for authenticated user.
+     * Test integration of task creation page for authenticated user
      *
      * @return void
      */
     public function testIntegrationTaskCreationPage()
     {
-        $fixtures = $this->loadCustomFixtures();
-        $this->login($this->client, $fixtures['user1']);
+        $this->login($this->client, $this->getUser('user1'));
         $crawler = $this->client->request('GET', '/tasks/create');
 
         $this->assertSame(1, $crawler->filter('a:contains("Se déconnecter")')->count());
@@ -145,14 +131,13 @@ class TaskControllerTest extends WebTestCase
     }
 
     /**
-     * Test new task creation.
+     * Test new task creation
      *
      * @return void
      */
     public function testTaskCreation()
     {
-        $fixtures = $this->loadCustomFixtures();
-        $this->login($this->client, $fixtures['user1']);
+        $this->login($this->client, $this->getUser('user1'));
         $crawler = $this->client->request('GET', '/tasks/create');
 
         $form = $crawler->selectButton('Ajouter')->form();
@@ -165,18 +150,17 @@ class TaskControllerTest extends WebTestCase
         $this->assertSame(1, $crawler->filter('div.alert.alert-success')->count());
         $this->assertSame(1, $crawler->filter('h4 a:contains("New Task")')->count());
         $this->assertSame(1, $crawler->filter('p:contains("New content")')->count());
-        $this->assertSame(2, $crawler->filter('h6:contains("Auteur: username1")')->count());
+        $this->assertSame(2, $crawler->filter('h6:contains("Auteur: user1")')->count());
     }
 
     /**
-     * Test validity of edit task link.
+     * Test validity of edit task link
      *
      * @return void
      */
     public function testValidEditTaskLinkTasksPage()
     {
-        $fixtures = $this->loadCustomFixtures();
-        $this->login($this->client, $fixtures['user1']);
+        $this->login($this->client, $this->getUser('user1'));
         $crawler = $this->client->request('GET', '/tasks/todo');
         $link = $crawler->selectLink('title1')->link();
         $crawler = $this->client->click($link);
@@ -184,14 +168,13 @@ class TaskControllerTest extends WebTestCase
     }
 
     /**
-     * Test integration of task edition page for authenticated user.
+     * Test integration of task edition page for authenticated user
      *
      * @return void
      */
     public function testIntegrationTaskEditionPage()
     {
-        $fixtures = $this->loadCustomFixtures();
-        $this->login($this->client, $fixtures['user1']);
+        $this->login($this->client, $this->getUser('user1'));
         $crawler = $this->client->request('GET', '/tasks/1/edit');
 
         $this->assertSame(1, $crawler->filter('a:contains("Se déconnecter")')->count());
@@ -206,14 +189,13 @@ class TaskControllerTest extends WebTestCase
     }
 
     /**
-     * Test new task edition.
+     * Test new task edition
      *
      * @return void
      */
     public function testTaskEdition()
     {
-        $fixtures = $this->loadCustomFixtures();
-        $this->login($this->client, $fixtures['user1']);
+        $this->login($this->client, $this->getUser('user1'));
         $crawler = $this->client->request('GET', '/tasks/1/edit');
 
         $form = $crawler->selectButton('Modifier')->form();
@@ -229,14 +211,13 @@ class TaskControllerTest extends WebTestCase
     }
 
     /**
-     * Test toggle action - set task1 is_done to true.
+     * Test toggle action - set task1 is_done to true
      *
      * @return void
      */
     public function testToggleActionSetIsDone()
     {
-        $fixtures = $this->loadCustomFixtures();
-        $this->login($this->client, $fixtures['user1']);
+        $this->login($this->client, $this->getUser('user1'));
         $crawler = $this->client->request('GET', '/tasks/1/toggle');
         $this->assertResponseRedirects('/tasks/todo');
         $crawler = $this->client->followRedirect();
@@ -245,14 +226,13 @@ class TaskControllerTest extends WebTestCase
     }
 
     /**
-     * Test toggle action - set task3 is_done to false.
+     * Test toggle action - set task3 is_done to false
      *
      * @return void
      */
     public function testToggleActionSetIsNotDone()
     {
-        $fixtures = $this->loadCustomFixtures();
-        $this->login($this->client, $fixtures['user1']);
+        $this->login($this->client, $this->getUser('user1'));
         $crawler = $this->client->request('GET', '/tasks/3/toggle');
         $this->assertResponseRedirects('/tasks/todo');
 
@@ -263,14 +243,13 @@ class TaskControllerTest extends WebTestCase
     }
 
     /**
-     * Test allowed delete action by author.
+     * Test allowed delete action by author
      *
      * @return void
      */
     public function testDeleteActionByAuthor()
     {
-        $fixtures = $this->loadCustomFixtures();
-        $this->login($this->client, $fixtures['user1']);
+        $this->login($this->client, $this->getUser('user1'));
         $crawler = $this->client->request('POST', '/tasks/4/delete');
         $this->assertResponseRedirects('/tasks/todo');
         $crawler = $this->client->followRedirect();
@@ -279,14 +258,13 @@ class TaskControllerTest extends WebTestCase
     }
 
     /**
-     * Test forbidden delete action by other user than author.
+     * Test forbidden delete action by other user than author
      *
      * @return void
      */
     public function testDeleteActionByNotAuthor()
     {
-        $fixtures = $this->loadCustomFixtures();
-        $this->login($this->client, $fixtures['user1']);
+        $this->login($this->client, $this->getUser('user1'));
         $this->client->request('DELETE', '/tasks/5/delete');
         $this->assertResponseStatusCodeSame(Response::HTTP_UNAUTHORIZED);
         $this->client->request('GET', '/tasks/todo');
@@ -294,14 +272,13 @@ class TaskControllerTest extends WebTestCase
     }
 
     /**
-     * Test allowed anonymous task delete action by admin.
+     * Test allowed anonymous task delete action by admin
      *
      * @return void
      */
     public function testAnonymousTaskDeleteActionByAdmin()
     {
-        $fixtures = $this->loadCustomFixtures();
-        $this->login($this->client, $fixtures['admin1']);
+        $this->login($this->client, $this->getUser('admin1'));
         $crawler = $this->client->request('DELETE', '/tasks/1/delete');
         $this->assertResponseRedirects('/tasks/todo');
         $crawler = $this->client->followRedirect();
@@ -310,14 +287,13 @@ class TaskControllerTest extends WebTestCase
     }
 
     /**
-     * Test forbidden anonymous task delete action by not granted role_admin.
+     * Test forbidden anonymous task delete action by not granted role_admin
      *
      * @return void
      */
     public function testAnonymousTaskDeleteActionByNotAdmin()
     {
-        $fixtures = $this->loadCustomFixtures();
-        $this->login($this->client, $fixtures['user1']);
+        $this->login($this->client, $this->getUser('user1'));
         $this->client->request('DELETE', '/tasks/1/delete');
         $this->assertResponseStatusCodeSame(Response::HTTP_UNAUTHORIZED);
         $this->client->request('GET', '/tasks/todo');
@@ -325,7 +301,7 @@ class TaskControllerTest extends WebTestCase
     }
 
     /**
-     * Test 404 error response when action with unexisting resource.
+     * Test 404 error response when action with unexisting resource
      *
      * @return void
      */
@@ -334,10 +310,9 @@ class TaskControllerTest extends WebTestCase
         $routes = [
             ['GET', '/tasks/10/edit'],
             ['GET', '/tasks/10/toggle'],
-            ['DELETE', '/tasks/10/delete'],
+            ['DELETE', '/tasks/10/delete']
         ];
-        $fixtures = $this->loadCustomFixtures();
-        $this->login($this->client, $fixtures['user1']);
+        $this->login($this->client, $this->getUser('user1'));
 
         foreach ($routes as $route) {
             $this->client->request($route[0], $route[1]);
@@ -346,7 +321,7 @@ class TaskControllerTest extends WebTestCase
     }
 
     /**
-     * Test validity of homepage header link.
+     * Test validity of homepage header link
      *
      * @return void
      */

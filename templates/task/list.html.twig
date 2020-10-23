@@ -48,9 +48,8 @@
 								{% endif %}
 							</button>
 						</form>
-						<form action="{{ path('task_delete', {'id' : task.id }) }}" method="post">
-							<input type="hidden" name="_csrf_token" value="{{ csrf_token('task_deletion_' ~ task.id ) }}">
-							<button type="submit" class="btn btn-danger btn-sm pull-right">Supprimer</button>
+						<form action="{{ path('task_delete', {'id' : task.id }) }}">
+							<button class="btn btn-danger btn-sm pull-right">Supprimer</button>
 						</form>
 					</div>
 				</div>

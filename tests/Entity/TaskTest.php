@@ -17,7 +17,7 @@ class TaskTest extends KernelTestCase
      *
      * @return void
      */
-    public function testValidEntity()
+    public function testValidTaskEntity()
     {
         $task = new Task();
         $task->setTitle('valid title');
@@ -26,18 +26,36 @@ class TaskTest extends KernelTestCase
     }
 
     /**
-     * Assert invalid entity (email, company) in invalid.
+     * Assert invalid blank entity (email, company) is invalid.
      *
      * @return void
      */
-    public function testInvalidEntity()
+    public function testInvalidBlankTaskEntity()
     {
         $invalidTask = new Task();
         $invalidTask->setTitle('');
         $invalidTask->setContent('');
-        $this->assertHasErrors($invalidTask, 2);
+        $this->assertHasErrors($invalidTask, 2);        
     }
 
+    /**
+     * Assert invalid null entity (email, company) is invalid.
+     *
+     * @return void
+     */
+    public function testInvalidNullTaskEntity()
+    {
+        $invalidTask = new Task();
+        $invalidTask->setTitle(null);
+        $invalidTask->setContent(null);
+        $this->assertHasErrors($invalidTask, 4);  
+    }
+
+    /**
+     * Test togle method from Task entity
+     *
+     * @return void
+     */
     public function testToggle()
     {
         $task = new Task();

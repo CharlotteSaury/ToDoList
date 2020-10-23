@@ -3,9 +3,11 @@
 namespace App\Tests\Controller;
 
 use App\Tests\Utils\NeedLogin;
+use App\DataFixtures\TaskTestFixtures;
+use App\DataFixtures\UserTestFixtures;
+use Symfony\Component\HttpFoundation\Response;
 use Liip\TestFixturesBundle\Test\FixturesTrait;
 use Symfony\Bundle\FrameworkBundle\Test\WebTestCase;
-use Symfony\Component\HttpFoundation\Response;
 
 class SecurityControllerTest extends WebTestCase
 {
@@ -17,18 +19,7 @@ class SecurityControllerTest extends WebTestCase
     public function setUp()
     {
         $this->client = static::createClient();
-    }
-
-    /**
-     * Load fixtures files.
-     *
-     * @return array
-     */
-    public function loadCustomFixtures()
-    {
-        return $this->loadFixtureFiles([
-            \dirname(__DIR__).'/Fixtures/users.yaml',
-        ]);
+        $this->loadFixtures([TaskTestFixtures::class, UserTestFixtures::class]);
     }
 
     /**
@@ -54,11 +45,10 @@ class SecurityControllerTest extends WebTestCase
      */
     public function testLoginValidCredentials()
     {
-        $this->loadCustomFixtures();
         $crawler = $this->client->request('GET', '/login');
 
         $form = $crawler->selectButton('Se connecter')->form();
-        $form['_username'] = 'username1';
+        $form['_username'] = 'user1';
         $form['_password'] = 'password';
         $this->client->submit($form);
 
@@ -77,7 +67,6 @@ class SecurityControllerTest extends WebTestCase
      */
     public function testLoginInvalidCredentials()
     {
-        $this->loadCustomFixtures();
         $crawler = $this->client->request('GET', '/login');
 
         $form = $crawler->selectButton('Se connecter')->form();
@@ -93,8 +82,7 @@ class SecurityControllerTest extends WebTestCase
 
     public function testLogout()
     {
-        $fixtures = $this->loadCustomFixtures();
-        $this->login($this->client, $fixtures['user1']);
+        $this->login($this->client, $this->getUser('user1'));
         $this->client->request('GET', '/logout');
         $this->assertResponseRedirects('http://localhost/');
     }
