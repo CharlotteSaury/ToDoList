@@ -2,10 +2,6 @@ language: php
 sudo: false
 php:
   - '7.4.0'
-cache:
-  directories:
-      - $HOME/.composer/cache/files
-      - $HOME/symfony-bridge/.phpunit
 
 services:
   - mysql
