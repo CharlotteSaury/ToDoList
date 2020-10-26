@@ -5,7 +5,7 @@ Project 8 of OpenClassrooms "PHP/Symfony app developper" course.
 [![Codacy Badge](https://app.codacy.com/project/badge/Grade/e56deac0c32a413785d136ddabc37762)](https://www.codacy.com/gh/CharlotteSaury/ToDoList/dashboard?utm_source=github.com&amp;utm_medium=referral&amp;utm_content=CharlotteSaury/ToDoList&amp;utm_campaign=Badge_Grade)
 <img src="https://travis-ci.com/CharlotteSaury/ToDoList.svg?branch=main" alt="TravisCI badge" />
 
-# Description
+## Description
 
 ToDo & Co is a new startup developping an application to manage life daily tasks. However, application has been developped very quickly to make demonstration to potential investors, as minimum viable product.
 This project aims to implement new functionnalities, fix few anomalies and improve application quality.
@@ -18,79 +18,62 @@ Among them:
     - Generate quality and performance audit after app improvment
     - Suggest an improvment plan for further development
 
-# Environment : Symfony 5 project
+## Environment : Symfony 5 project
+
 Project require:
-<ul>
-    <li><a href="https://getcomposer.org/">Composer</a></li>
-    <li>PHP 7.4</li>
-</ul>
+* [Composer]("https://getcomposer.org/")
+* PHP 7.4
 
-# Installation
+## Installation
 
-<p><strong>1 - Git clone the project</strong></p>
-<pre>
-    <code>https://github.com/CharlotteSaury/ToDoList.git</code>
-</pre>
+#### 1 - Git clone the project
+`https://github.com/CharlotteSaury/ToDoList.git`
 
-<p><strong>2 - Install libraries</strong></p>
-<pre>
-    <code>php bin/console composer install</code>
-</pre>
+#### 2 - Install libraries
+`php bin/console composer install`
 
-<p><strong>3 - Create database</strong></p>
-<ul>
-    <li>a) Update DATABASE_URL .env file with your database configuration.
-        <pre>
-            <code>DATABASE_URL=mysql://db_user:db_password@127.0.0.1:3306/db_name</code>
-        </pre>
-    </li>
-    <li>b) Create database: 
-        <pre>
-            <code>php bin/console doctrine:database:create</code>
-        </pre>
-    </li>
-    <li>c) Create database structure:
-        <pre>
-            <code>php bin/console doctrine:schema:update --force</code>
-        </pre>
-    </li>
-    <li>d) Insert fictive data
-        <pre>
-            <code>php bin/console doctrine:fixtures:load --group=UserFixtures --group=TaskFixtures</code>
-        </pre>
-    </li>
-</ul>
+#### 3 - Create database
+* a) Update DATABASE_URL .env file with your database configuration.
+    `DATABASE_URL=mysql://db_user:db_password@127.0.0.1:3306/db_name`
+* b) Create database: 
+    `php bin/console doctrine:database:create`
+* c) Create database structure:
+    `php bin/console doctrine:schema:update --force`
+* d) Insert fictive data
+    `php bin/console doctrine:fixtures:load --group=UserFixtures --group=TaskFixtures`
 
-<p><strong>4 - Start server</strong></p>
-<pre>
-    <code>symfony serve -d</code>
-</pre>
+#### 4 - Start server
+`symfony serve -d`
 
-<p><strong>5 - Open ToDoList app</strong></p>
-<pre>
-    <code>symfony open:local</code>
-</pre>
+#### 5 - Open ToDoList app
+`symfony open:local`
 
-# Usage
+## Usage
 
 You can now use this app.
 If you generated fixtures, here are the users you can use:
-<ul>
-    <li>Utilisateur: Nom d'utilisateur: "user1" - Mot de passe: "password"</li>
-    <li>Administrateur: Nom d'utilisateur: "admin1" - Mot de passe: "password"</li>
-</ul>
+* User: username: "user1" - password: "password"
+* Administrator: Nom d'utilisateur: "admin1" - Mot de passe: "password"
 
-# Testing
+## Testing
 
 Unit and functionnal tests have been implemented with PHPUnit and require LiipTestFixturesBundle.
 To run all tests:
-<pre>
-    <code>php bin/phpunit</code>
-</pre>
+`php bin/phpunit`
 
 To run specific tests:
-<pre>
-    <code>php bin/phpunit --filter TaskControllerTest</code>
-</pre>
+`php bin/phpunit --filter TaskControllerTest`
 
-# Documentation
+To generate up-to-date test-coverage:
+`php bin/phpunit --coverage-html public/test-coverage`
+Test-coverage then accessible on /public/test-coverage/index.html
+
+## Contributing
+
+Please refer to contributing.md
+
+## Documentation
+
+* UML diagrams: /documentation/UML
+* Authentication guide: /documentation
+* Quality and performance audit: /documentation
