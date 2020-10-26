@@ -70,7 +70,7 @@ Test-coverage then accessible on /public/test-coverage/index.html
 
 ## Contributing
 
-Please refer to contributing.md
+Please refer to [CONTRIBUTING.md](CONTRIBUTING.md)
 
 ## Documentation
 
