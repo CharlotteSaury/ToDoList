@@ -127,7 +127,7 @@ class TaskController extends AbstractController
      *
      * @return Response
      */
-    public function deleteTaskAction(Task $task, Request $request)
+    public function deleteTaskAction(Task $task)
     {
         $this->taskManager->handleDeleteAction($task);
         $this->addFlash('success', 'La tâche a bien été supprimée.');
