@@ -49,7 +49,7 @@
 							</button>
 						</form>
 						<form action="{{ path('task_delete', {'id' : task.id }) }}">
-							<button class="btn btn-danger btn-sm pull-right">Supprimer</button>
+							<button class="btn btn-danger btn-sm pull-right"  {% if not is_granted('TASK_DELETE', task) %}disabled{% endif %}>Supprimer</button>
 						</form>
 					</div>
 				</div>
