@@ -25,6 +25,7 @@ security:
                 default_target_path:  /
             logout: 
                 path: logout
+            switch_user: true
 
     access_control:
         - { path: ^/login, roles: IS_AUTHENTICATED_ANONYMOUSLY }
