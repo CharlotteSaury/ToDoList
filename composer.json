@@ -15,7 +15,7 @@
     },
     "require": {
         "php": "7.4.0",
-        "doctrine/common": "2.*",
+        "doctrine/common": "3.*",
         "doctrine/doctrine-bundle": "2.1.*",
         "doctrine/doctrine-fixtures-bundle": "^3.3",
         "doctrine/doctrine-migrations-bundle": "^3.0",
