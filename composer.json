@@ -34,7 +34,7 @@
         "symfony/flex": "^1.0",
         "symfony/form": "5.1.*",
         "symfony/framework-bundle": "5.1.*",
-        "symfony/http-kernel": "5.1.*",
+        "symfony/http-kernel": "5.2.*",
         "symfony/monolog-bundle": "^3.1",
         "symfony/polyfill-apcu": "^1.0",
         "symfony/security-bundle": "5.1.*",
